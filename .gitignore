@@ -1,0 +1,12 @@
+# Binaries
+*.a
+*.o
+*.so
+plazza
+
+# Cache
+.cache
+compile_commands.json
+
+# VSCode
+.vscode
