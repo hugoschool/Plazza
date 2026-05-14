@@ -3,11 +3,11 @@ CXXFLAGS    :=  -Wall -Wextra -std=c++20
 CPPFLAGS	:=	-I ./include
 
 ifeq ($(ENV), dev)
-	CXXFLAGS	+=	-g3
+	CXXFLAGS	+=	-g3 -DENABLE_DEBUG
 endif
 
 ifeq ($(ENV), dev-asan)
-	CXXFLAGS	+=	-fsanitize=address
+	CXXFLAGS	+=	-fsanitize=address -DENABLE_DEBUG
 	LDLIBS	+=	-fsanitize=address
 endif
 
