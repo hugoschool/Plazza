@@ -12,7 +12,8 @@ ifeq ($(ENV), dev-asan)
 endif
 
 SRC :=  src/main.cpp \
-		src/Args.cpp
+		src/Args.cpp \
+		src/Reception.cpp
 OBJ :=  $(SRC:.cpp=.o)
 
 BINARY  :=  plazza
