@@ -1,5 +1,6 @@
 CXX :=  clang++
 CXXFLAGS    :=  -Wall -Wextra -std=c++20
+CPPFLAGS	:=	-I ./include
 
 ifeq ($(ENV), dev)
 	CXXFLAGS	+=	-g3
@@ -10,7 +11,8 @@ ifeq ($(ENV), dev-asan)
 	LDLIBS	+=	-fsanitize=address
 endif
 
-SRC :=  src/main.cpp
+SRC :=  src/main.cpp \
+		src/Args.cpp
 OBJ :=  $(SRC:.cpp=.o)
 
 BINARY  :=  plazza
