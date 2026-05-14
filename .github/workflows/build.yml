@@ -1,0 +1,23 @@
+name: Build
+
+on:
+  push:
+  workflow_dispatch:
+
+env:
+  BINARY: plazza
+
+jobs:
+  build:
+    name: Build
+    if: ${{ github.repository_owner == 'hugoschool' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build
+        timeout-minutes: 2
+        run: make -j`nproc`
+
+      - name: Checking if file exist
+        run: test -f ${{ env.BINARY }}
