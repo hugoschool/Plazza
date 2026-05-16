@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Args.hpp"
+#include <regex>
 
 namespace plazza {
     class Reception {
@@ -15,5 +16,6 @@ namespace plazza {
             double _multiplier;
             int _cooks;
             long long _restockDelay;
+            std::regex _lineRegex;
     };
 }
