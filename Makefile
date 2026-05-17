@@ -14,7 +14,8 @@ endif
 SRC :=  src/main.cpp \
 		src/Args.cpp \
 		src/Reception.cpp \
-		src/Kitchen.cpp
+		src/Kitchen.cpp \
+		src/Pizza.cpp
 OBJ :=  $(SRC:.cpp=.o)
 
 BINARY  :=  plazza
