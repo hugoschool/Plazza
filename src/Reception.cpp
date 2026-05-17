@@ -10,7 +10,8 @@ plazza::Reception::Reception(plazza::Args &args) :
     _multiplier(args.getMultiplier()),
     _cooks(args.getCooks()),
     _restockDelay(args.getRestockDelay()),
-    _lineRegex("(?:\\s?)+([a-zA-Z]+)\\s+(S|M|L|XL|XXL)\\s+(x[1-9][0-9]*)(?:\\s?)+")
+    _lineRegex("(?:\\s?)+([a-zA-Z]+)\\s+(S|M|L|XL|XXL)\\s+(x[1-9][0-9]*)(?:\\s?)+"),
+    _kitchens()
 {
     if (_multiplier < 0 || _cooks < 0 || _restockDelay < 0)
         throw Exception("Invalid given argument");
