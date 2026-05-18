@@ -1,6 +1,8 @@
 #include "IPCM.hpp"
 #include "Exception.hpp"
+#include "Utils.hpp"
 #include <csignal>
+#include <string>
 #include <unistd.h>
 
 plazza::IPCM::IPCM()
@@ -34,4 +36,12 @@ void plazza::IPCM::kitchenToReceptionist(const std::string msg)
 void plazza::IPCM::receptionistToKitchen(int index, const std::string pizzamsg)
 {
     write(_kitchensfds[index].second, pizzamsg.c_str(), pizzamsg.length());
+}
+
+std::string plazza::IPCM::readKitchenMessage() // ajouter un lock
+{
+    char buffer[BUFFER_SIZE];
+
+    read(_receptionistfds.first, buffer, BUFFER_SIZE);
+    return buffer;
 }

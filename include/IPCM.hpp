@@ -2,6 +2,9 @@
 
 #include <string>
 #include <vector>
+
+#define BUFFER_SIZE 256
+
 namespace plazza {
 
     enum class StatusCode {
@@ -21,6 +24,7 @@ namespace plazza {
 
             void kitchenToReceptionist(const std::string msg);
             void receptionistToKitchen(int index, const std::string pizzamsg);
+            std::string readKitchenMessage();
             void openKitchen();
     };
 }
