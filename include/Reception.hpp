@@ -2,6 +2,7 @@
 
 #include "Args.hpp"
 #include "Kitchen.hpp"
+#include "IPCM.hpp"
 #include <regex>
 #include <vector>
 
@@ -19,6 +20,7 @@ namespace plazza {
             int _cooks;
             long long _restockDelay;
             std::regex _lineRegex;
+            IPCM _comeMeunier;
 
             std::vector<plazza::Kitchen> _kitchens;
 
