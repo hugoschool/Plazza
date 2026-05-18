@@ -16,15 +16,15 @@ namespace plazza {
 
     class IPCM {
         private:
-            std::pair<int, int> _receptionistfds;
+            std::vector<std::pair<int, int>> _receptionistfds;
             std::vector<std::pair<int, int>> _kitchensfds;
         public:
             IPCM();
             ~IPCM();
 
-            void kitchenToReceptionist(const std::string msg);
+            void kitchenToReceptionist(int index, const std::string msg);
             void receptionistToKitchen(int index, const std::string pizzamsg);
-            std::string readKitchenMessage();
+            std::string readKitchenMessage(int index);
             void openKitchen();
     };
 }
