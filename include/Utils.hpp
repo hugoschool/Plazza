@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -18,6 +19,15 @@ namespace plazza::Utils {
                 }
                 tokens.push_back(s);
                 return tokens;
+            }
+
+            static std::string tolower(std::string str) {
+                std::string newString(str);
+
+                std::transform(newString.begin(), newString.end(), newString.begin(), [](unsigned char c) {
+                    return std::tolower(c);
+                });
+                return newString;
             }
     };
 }

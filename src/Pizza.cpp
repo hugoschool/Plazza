@@ -28,13 +28,14 @@ double plazza::Pizza::getBakingTime() const
 
 std::optional<plazza::Pizza::Type> plazza::Pizza::getType(std::string str)
 {
-    if (str == "Regina")
+    str = Utils::String::tolower(str);
+    if (str == "regina")
         return plazza::Pizza::Type::Regina;
-    if (str == "Margarita")
+    if (str == "margarita")
         return plazza::Pizza::Type::Margarita;
-    if (str == "Americana")
+    if (str == "americana")
         return plazza::Pizza::Type::Americana;
-    if (str == "Fantasia")
+    if (str == "fantasia")
         return plazza::Pizza::Type::Fantasia;
     return std::nullopt;
 }
@@ -46,15 +47,16 @@ std::string plazza::Pizza::getType(plazza::Pizza::Type type)
 
 std::optional<plazza::Pizza::Size> plazza::Pizza::getSize(std::string str)
 {
-    if (str == "S")
+    str = Utils::String::tolower(str);
+    if (str == "s")
         return Size::S;
-    if (str == "M")
+    if (str == "m")
         return Size::M;
-    if (str == "L")
+    if (str == "l")
         return Size::L;
-    if (str == "XL")
+    if (str == "xl")
         return Size::XL;
-    if (str == "XXL")
+    if (str == "xxl")
         return Size::XXL;
     return std::nullopt;
 }
