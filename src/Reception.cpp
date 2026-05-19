@@ -71,16 +71,26 @@ void plazza::Reception::interpretMessage(std::string msg)
 {
     std::vector<std::string> line_vec = Utils::String::split(msg, " ");
 
-    if (line_vec[0].starts_with(std::to_string(static_cast<int>(StatusCode::OK)))) {}
-    if (line_vec[0].starts_with(std::to_string(static_cast<int>(StatusCode::STOP)))) {
-        int kitchenID = std::stoi(line_vec[1]);
-        _ipc.closeKitchen(kitchenID);
-    }
-    if (line_vec[0].starts_with(std::to_string(static_cast<int>(StatusCode::DONE)))) {
-        // faire un truc jsp
-    }
-    if (line_vec[0].starts_with(std::to_string(static_cast<int>(StatusCode::REDISTRIBUTE)))) {
-        // aussi faire un truc jsp
+    if (line_vec.size() == 0)
+        return;
+
+    const int statusCodeInt = std::stoi(line_vec[0]);
+
+    if (statusCodeInt == 0)
+        return;
+
+    const StatusCode statusCode = static_cast<StatusCode>(statusCodeInt);
+
+    DEBUG << "Received status code " << statusCodeInt << std::endl;
+    switch (statusCode) {
+        case StatusCode::OK:
+            break;
+        case StatusCode::STOP:
+            break;
+        case StatusCode::DONE:
+            break;
+        case StatusCode::REDISTRIBUTE:
+            break;
     }
 }
 
