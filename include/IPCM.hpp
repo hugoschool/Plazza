@@ -26,5 +26,9 @@ namespace plazza {
             void receptionistToKitchen(int index, const std::string pizzamsg);
             std::string readKitchenMessage(int index);
             void openKitchen();
+            void closeKitchen(int index);
+
+            std::vector<std::pair<int, int>> getReceptionistFds() const;
+            std::vector<std::pair<int, int>> getKitchenFds() const;
     };
 }
