@@ -8,8 +8,8 @@
 
 using namespace std::chrono_literals;
 
-plazza::Kitchen::Kitchen(double multiplier, int cooksAmount, long long restockDelay, size_t kitchenID, IPCM &come) :
-    _multiplier(multiplier), _cooksAmount(cooksAmount), _restockDelay(restockDelay), _kitchenID(kitchenID), _come(come), _expiry(5s)
+plazza::Kitchen::Kitchen(double multiplier, int cooksAmount, long long restockDelay, size_t kitchenID, IPCM &ipc) :
+    _multiplier(multiplier), _cooksAmount(cooksAmount), _restockDelay(restockDelay), _kitchenID(kitchenID), _ipc(ipc), _expiry(5s)
 {
     _lastBaked = std::chrono::steady_clock::now();
 }
@@ -27,7 +27,7 @@ void plazza::Kitchen::run()
     std::string msg = std::to_string(static_cast<int>(StatusCode::STOP));
     msg.append(" ");
     msg.append(std::to_string(_kitchenID));
-    _come.kitchenToReceptionist(_kitchenID, msg);
+    _ipc.kitchenToReceptionist(_kitchenID, msg);
     DEBUG << "Exiting Kitchen" << std::endl;
     exit(0);
 }

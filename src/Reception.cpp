@@ -58,7 +58,7 @@ void plazza::Reception::run()
         }
         // deplacer cette boucle dans un thread pour que le getline ne soit pas bloquant
         for (size_t i = 0; i < _nextKitchenID; i++) {
-            _messageQueue.push(_comeMeunier.readKitchenMessage(i));
+            _messageQueue.push(_ipc.readKitchenMessage(i));
         }
         for (size_t i = 0; i < _messageQueue.size(); i++) {
             interpretMessage(_messageQueue.front());
@@ -74,7 +74,7 @@ void plazza::Reception::interpretMessage(std::string msg)
     if (line_vec[0].starts_with(std::to_string(static_cast<int>(StatusCode::OK)))) {}
     if (line_vec[0].starts_with(std::to_string(static_cast<int>(StatusCode::STOP)))) {
         int kitchenID = std::stoi(line_vec[1]);
-        _comeMeunier.closeKitchen(kitchenID);
+        _ipc.closeKitchen(kitchenID);
     }
     if (line_vec[0].starts_with(std::to_string(static_cast<int>(StatusCode::DONE)))) {
         // faire un truc jsp
@@ -90,8 +90,8 @@ void plazza::Reception::createKitchen()
     DEBUG << "Creating a kitchen" << std::endl;
 
     // TODO: load balancing
-    _comeMeunier.openKitchen();
-    Kitchen kitchen(_multiplier, _cooks, _restockDelay, _nextKitchenID, _comeMeunier);
+    _ipc.openKitchen();
+    Kitchen kitchen(_multiplier, _cooks, _restockDelay, _nextKitchenID, _ipc);
     _nextKitchenID++;
     pid_t pid = fork();
 

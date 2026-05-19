@@ -22,7 +22,7 @@ namespace plazza {
             long long _restockDelay;
             size_t _nextKitchenID;
             std::regex _lineRegex;
-            IPCM _comeMeunier;
+            IPCM _ipc;
             std::queue<std::string> _messageQueue;
 
             std::vector<plazza::Kitchen> _kitchens;
