@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IPCM.hpp"
+#include "Stock.hpp"
 #include <chrono>
 
 namespace plazza {
@@ -24,5 +25,7 @@ namespace plazza {
             std::chrono::steady_clock::time_point _lastRestock;
             const std::chrono::seconds _expiry;
             const std::chrono::milliseconds _restockDelay;
+
+            Stock _stock;
     };
 }

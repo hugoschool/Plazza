@@ -11,7 +11,8 @@ using namespace std::chrono_literals;
 plazza::Kitchen::Kitchen(double multiplier, int cooksAmount, long long restockDelay, size_t kitchenID, IPCM &ipc) :
     _multiplier(multiplier), _cooksAmount(cooksAmount), _running(true), _kitchenID(kitchenID), _ipc(ipc),
     _expiry(5s),
-    _restockDelay(restockDelay)
+    _restockDelay(restockDelay),
+    _stock()
 {
     _lastBaked = std::chrono::steady_clock::now();
     _lastRestock = std::chrono::steady_clock::now();
@@ -28,8 +29,9 @@ void plazza::Kitchen::run()
             break;
         }
         if (currentTime - _lastRestock >= _restockDelay) {
-            DEBUG << "Restocked ingredients" << std::endl;
+            DEBUG << "Restocking ingredients" << std::endl;
             _lastRestock = std::chrono::steady_clock::now();
+            _stock.restock();
         }
     }
     std::string msg = std::to_string(static_cast<int>(StatusCode::STOP));
