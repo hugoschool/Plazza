@@ -21,5 +21,7 @@ namespace plazza {
             std::regex _lineRegex;
 
             std::vector<plazza::Kitchen> _kitchens;
+
+            void createKitchen();
     };
 }

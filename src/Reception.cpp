@@ -5,6 +5,7 @@
 #include "Utils.hpp"
 #include <iostream>
 #include <regex>
+#include <unistd.h>
 
 plazza::Reception::Reception(plazza::Args &args) :
     _multiplier(args.getMultiplier()),
@@ -50,6 +51,25 @@ void plazza::Reception::run()
             std::string pizzaAmount = matches[3];
 
             std::cout << "Pizza: " << pizzaType << " " << pizzaSize << " " << pizzaAmount << std::endl;
+            createKitchen();
         }
+    }
+}
+
+void plazza::Reception::createKitchen()
+{
+    DEBUG << "Kitchens amount: " << _kitchens.size() << std::endl;
+    DEBUG << "Creating a kitchen" << std::endl;
+
+    // TODO: load balancing
+    Kitchen kitchen(_multiplier, _cooks, _restockDelay);
+    pid_t pid = fork();
+
+    if (pid == -1)
+        throw Exception("Fork failed");
+    if (pid == 0) {
+        kitchen.run();
+    } else {
+        _kitchens.push_back(kitchen);
     }
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <chrono>
+
 namespace plazza {
     class Kitchen {
         public:
@@ -13,5 +15,8 @@ namespace plazza {
             double _multiplier;
             int _cooksAmount;
             long long _restockDelay;
+
+            std::chrono::steady_clock::time_point _lastBaked;
+            const std::chrono::seconds _expiry;
     };
 }
