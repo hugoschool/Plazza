@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,7 +25,7 @@ namespace plazza {
 
             void kitchenToReceptionist(int index, const std::string msg);
             void receptionistToKitchen(int index, const std::string pizzamsg);
-            std::string readKitchenMessage(int index);
+            std::optional<std::string> readKitchenMessage(int index);
             void openKitchen();
             void closeKitchen(int index);
 

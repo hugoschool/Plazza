@@ -1,9 +1,9 @@
 #include "IPCM.hpp"
 #include "Debug.hpp"
 #include "Exception.hpp"
-#include "Utils.hpp"
-#include <csignal>
 #include <cstring>
+#include <fcntl.h>
+#include <optional>
 #include <string>
 #include <iostream>
 #include <unistd.h>
@@ -23,6 +23,13 @@ void plazza::IPCM::openKitchen()
         throw Exception("Pipe failed");
     if (pipe(receptionistpipefds) == -1)
         throw Exception("Pipe failed");
+
+    // Make reading pipes non blocking
+    if (fcntl(kitchenpipefds[0], F_SETFL, O_NONBLOCK) < 0)
+        throw Exception("Pipe failed");
+    if (fcntl(receptionistpipefds[0], F_SETFL, O_NONBLOCK) < 0)
+        throw Exception("Pipe failed");
+
     _kitchensfds.push_back(std::pair(kitchenpipefds[0], kitchenpipefds[1]));
     _receptionistfds.push_back(std::pair(receptionistpipefds[0], receptionistpipefds[1]));
 
@@ -52,13 +59,13 @@ void plazza::IPCM::receptionistToKitchen(int index, const std::string pizzamsg)
     write(_kitchensfds[index].second, pizzamsg.c_str(), pizzamsg.length());
 }
 
-std::string plazza::IPCM::readKitchenMessage(int index)
+std::optional<std::string> plazza::IPCM::readKitchenMessage(int index)
 {
     char buffer[BUFFER_SIZE];
 
     std::memset(buffer, '\0', BUFFER_SIZE);
-    if (read(_receptionistfds[index].first, buffer, BUFFER_SIZE - 1) == -1) {
-        return std::string("");
+    if (read(_receptionistfds[index].first, buffer, BUFFER_SIZE - 1) <= 0) {
+        return std::nullopt;
     };
     return std::string(buffer);
 }

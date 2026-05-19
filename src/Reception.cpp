@@ -58,7 +58,11 @@ void plazza::Reception::run()
         }
         // deplacer cette boucle dans un thread pour que le getline ne soit pas bloquant
         for (size_t i = 0; i < _nextKitchenID; i++) {
-            _messageQueue.push(_ipc.readKitchenMessage(i));
+            std::optional<std::string> message = _ipc.readKitchenMessage(i);
+
+            if (!message.has_value())
+                continue;
+            _messageQueue.push(message.value());
         }
         for (size_t i = 0; i < _messageQueue.size(); i++) {
             interpretMessage(_messageQueue.front());
@@ -85,8 +89,11 @@ void plazza::Reception::interpretMessage(std::string msg)
     switch (statusCode) {
         case StatusCode::OK:
             break;
-        case StatusCode::STOP:
+        case StatusCode::STOP: {
+            const int kitchenId = std::stoi(line_vec[1]);
+            _ipc.closeKitchen(kitchenId);
             break;
+        }
         case StatusCode::DONE:
             break;
         case StatusCode::REDISTRIBUTE:
