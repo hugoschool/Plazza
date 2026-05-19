@@ -3,10 +3,7 @@
 #include <string>
 #include <vector>
 
-#define BUFFER_SIZE 256
-
 namespace plazza {
-
     enum class StatusCode {
         OK = 200,
         STOP = 500,
@@ -18,6 +15,9 @@ namespace plazza {
         private:
             std::vector<std::pair<int, int>> _receptionistfds;
             std::vector<std::pair<int, int>> _kitchensfds;
+
+            static constexpr std::size_t BUFFER_SIZE = 256;
+
         public:
             IPCM();
             ~IPCM();
