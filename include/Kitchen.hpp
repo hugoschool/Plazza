@@ -15,11 +15,14 @@ namespace plazza {
         private:
             double _multiplier;
             int _cooksAmount;
-            long long _restockDelay;
+
+            bool _running;
             size_t _kitchenID;
             IPCM &_ipc;
 
             std::chrono::steady_clock::time_point _lastBaked;
+            std::chrono::steady_clock::time_point _lastRestock;
             const std::chrono::seconds _expiry;
+            const std::chrono::milliseconds _restockDelay;
     };
 }

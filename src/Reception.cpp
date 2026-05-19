@@ -98,6 +98,7 @@ void plazza::Reception::interpretMessage(std::string msg)
             break;
         case StatusCode::REDISTRIBUTE:
             break;
+        // TODO: missing wait on kitchen pids (or they get zombied)
     }
 }
 
