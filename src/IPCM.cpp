@@ -1,8 +1,11 @@
 #include "IPCM.hpp"
+#include "Debug.hpp"
 #include "Exception.hpp"
 #include "Utils.hpp"
 #include <csignal>
+#include <cstring>
 #include <string>
+#include <iostream>
 #include <unistd.h>
 
 plazza::IPCM::IPCM()
@@ -22,6 +25,9 @@ void plazza::IPCM::openKitchen()
         throw Exception("Pipe failed");
     _kitchensfds.push_back(std::pair(kitchenpipefds[0], kitchenpipefds[1]));
     _receptionistfds.push_back(std::pair(receptionistpipefds[0], receptionistpipefds[1]));
+
+    DEBUG << "Kitchen FDs: " << _kitchensfds.size() << std::endl;
+    DEBUG << "Receptionist FDs: " << _receptionistfds.size() << std::endl;
 }
 
 void plazza::IPCM::closeKitchen(int index)
@@ -30,17 +36,19 @@ void plazza::IPCM::closeKitchen(int index)
     close(_kitchensfds[index].second);
     close(_receptionistfds[index].first);
     close(_receptionistfds[index].second);
-    _receptionistfds.erase(_receptionistfds.begin() + index);
-    _kitchensfds.erase(_kitchensfds.begin() + index);
+
+    DEBUG << "Successfully closed kitchen" << std::endl;
 }
 
 void plazza::IPCM::kitchenToReceptionist(int index, const std::string msg)
 {
+    DEBUG << "Sending message to receptionist from " << index << ": \"" << msg << "\"" << std::endl;
     write(_receptionistfds[index].second, msg.c_str(), msg.length());
 }
 
 void plazza::IPCM::receptionistToKitchen(int index, const std::string pizzamsg)
 {
+    DEBUG << "Sending message to kitchen from " << index << ": \"" << pizzamsg << "\"" << std::endl;
     write(_kitchensfds[index].second, pizzamsg.c_str(), pizzamsg.length());
 }
 
@@ -48,8 +56,11 @@ std::string plazza::IPCM::readKitchenMessage(int index)
 {
     char buffer[BUFFER_SIZE];
 
-    read(_receptionistfds[index].first, buffer, BUFFER_SIZE);
-    return buffer;
+    std::memset(buffer, '\0', BUFFER_SIZE);
+    if (read(_receptionistfds[index].first, buffer, BUFFER_SIZE - 1) == -1) {
+        return std::string("");
+    };
+    return std::string(buffer);
 }
 
 std::vector<std::pair<int, int>> plazza::IPCM::getKitchenFds() const

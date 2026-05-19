@@ -3,6 +3,7 @@
 #include "Args.hpp"
 #include "Kitchen.hpp"
 #include "IPCM.hpp"
+#include <queue>
 #include <regex>
 #include <vector>
 
@@ -19,11 +20,14 @@ namespace plazza {
             double _multiplier;
             int _cooks;
             long long _restockDelay;
+            size_t _nextKitchenID;
             std::regex _lineRegex;
             IPCM _comeMeunier;
+            std::queue<std::string> _messageQueue;
 
             std::vector<plazza::Kitchen> _kitchens;
 
             void createKitchen();
+            void interpretMessage(std::string);
     };
 }
