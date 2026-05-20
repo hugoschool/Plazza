@@ -12,7 +12,8 @@ plazza::Kitchen::Kitchen(double multiplier, int cooksAmount, long long restockDe
     _multiplier(multiplier), _cooksAmount(cooksAmount), _running(true), _kitchenID(kitchenID), _ipc(ipc),
     _expiry(5s),
     _restockDelay(restockDelay),
-    _stock()
+    _stock(),
+    _party(_multiplier, _cooksAmount)
 {
     _lastBaked = std::chrono::steady_clock::now();
     _lastRestock = std::chrono::steady_clock::now();
@@ -22,7 +23,10 @@ void plazza::Kitchen::run()
 {
     DEBUG << "Entering Kitchen loop" << std::endl;
 
+    // TODO: temporary, remove this later when not needed
+    _party.add(Pizza(Pizza::Type::Regina, Pizza::Size::XL));
     while (_running) {
+        // TODO: handling pizza message here
         std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
         if (currentTime - _lastBaked >= _expiry) {
             _running = false;

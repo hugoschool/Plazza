@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IPCM.hpp"
+#include "PizzaParty.hpp"
 #include "Stock.hpp"
 #include <chrono>
 
@@ -27,5 +28,6 @@ namespace plazza {
             const std::chrono::milliseconds _restockDelay;
 
             Stock _stock;
+            PizzaParty _party;
     };
 }

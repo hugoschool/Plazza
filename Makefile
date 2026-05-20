@@ -17,7 +17,9 @@ SRC :=  src/main.cpp \
 		src/Kitchen.cpp \
 		src/IPCM.cpp \
 		src/Pizza.cpp \
-		src/Stock.cpp
+		src/Stock.cpp \
+		src/PizzaParty.cpp \
+		src/Cook.cpp
 OBJ :=  $(SRC:.cpp=.o)
 
 BINARY  :=  plazza

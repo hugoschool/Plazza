@@ -20,6 +20,7 @@ namespace plazza {
 
             void restock();
             // TODO: definitely add a mutex here
+            // TODO: maybe a CV too?
 
         private:
             void restockElement(unsigned int &);
