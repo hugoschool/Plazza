@@ -5,7 +5,6 @@
 #include "IPCM.hpp"
 #include <queue>
 #include <regex>
-#include <vector>
 
 namespace plazza {
     class Reception {
@@ -24,8 +23,6 @@ namespace plazza {
             std::regex _lineRegex;
             IPCM _ipc;
             std::queue<std::string> _messageQueue;
-
-            std::vector<plazza::Kitchen> _kitchens;
 
             void createKitchen();
             void interpretMessage(std::string);

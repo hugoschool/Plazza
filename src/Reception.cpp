@@ -3,6 +3,7 @@
 #include "Exception.hpp"
 #include "Debug.hpp"
 #include "IPCM.hpp"
+#include "Kitchen.hpp"
 #include "Utils.hpp"
 #include <iostream>
 #include <regex>
@@ -14,8 +15,7 @@ plazza::Reception::Reception(plazza::Args &args) :
     _cooks(args.getCooks()),
     _restockDelay(args.getRestockDelay()),
     _nextKitchenID(0),
-    _lineRegex("(?:\\s?)+([a-zA-Z]+)\\s+(S|M|L|XL|XXL)\\s+(x[1-9][0-9]*)(?:\\s?)+"),
-    _kitchens()
+    _lineRegex("(?:\\s?)+([a-zA-Z]+)\\s+(S|M|L|XL|XXL)\\s+(x[1-9][0-9]*)(?:\\s?)+")
 {
     if (_multiplier < 0 || _cooks < 0 || _restockDelay < 0)
         throw Exception("Invalid given argument");
@@ -104,20 +104,19 @@ void plazza::Reception::interpretMessage(std::string msg)
 
 void plazza::Reception::createKitchen()
 {
-    DEBUG << "Kitchens amount: " << _kitchens.size() << std::endl;
+    DEBUG << "Current kitchen amount: " << _nextKitchenID << std::endl;
     DEBUG << "Creating a kitchen" << std::endl;
 
     // TODO: load balancing
     _ipc.openKitchen();
-    Kitchen kitchen(_multiplier, _cooks, _restockDelay, _nextKitchenID, _ipc);
     _nextKitchenID++;
     pid_t pid = fork();
 
     if (pid == -1)
         throw Exception("Fork failed");
     if (pid == 0) {
+        Kitchen kitchen(_multiplier, _cooks, _restockDelay, _nextKitchenID, _ipc);
+
         kitchen.run();
-    } else {
-        _kitchens.push_back(kitchen);
     }
 }
