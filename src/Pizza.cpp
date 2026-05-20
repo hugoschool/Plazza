@@ -1,6 +1,8 @@
 #include "Pizza.hpp"
+#include "Debug.hpp"
 #include "Utils.hpp"
 #include <optional>
+#include <iostream>
 
 plazza::Pizza::Pizza(Type type, Size size)
     : _type(type), _size(size), _cooked(false)
@@ -10,6 +12,12 @@ plazza::Pizza::Pizza(Type type, Size size)
 bool plazza::Pizza::getCooked() const
 {
     return _cooked;
+}
+
+void plazza::Pizza::setCooked(bool state)
+{
+    DEBUG << "New pizza cooked state: " << std::boolalpha << state << std::endl;
+    _cooked = state;
 }
 
 double plazza::Pizza::getBakingTime() const

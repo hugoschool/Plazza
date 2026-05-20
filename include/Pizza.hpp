@@ -28,6 +28,7 @@ namespace plazza {
             ~Pizza() = default;
 
             bool getCooked() const;
+            void setCooked(bool state);
 
             // Time is given in milliseconds. The multiplier must be added on top.
             double getBakingTime() const;
