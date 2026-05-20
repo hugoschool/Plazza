@@ -2,6 +2,7 @@
 *.a
 *.o
 *.so
+a.out
 plazza
 
 # Cache
@@ -10,3 +11,4 @@ compile_commands.json
 
 # VSCode
 .vscode
+bootstrap.cpp
