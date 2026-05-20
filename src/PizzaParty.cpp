@@ -14,6 +14,8 @@ plazza::PizzaParty::PizzaParty(double multiplier, int cooksAmount) :
     _cv(),
     _mutex()
 {
+    _lastBaked = std::chrono::steady_clock::now();
+
     _threads.reserve(_cooksAmount);
 
     for (int i = 0; i < _cooksAmount; i++) {
@@ -61,6 +63,7 @@ void plazza::PizzaParty::execute()
             _pizzaQueue.pop();
 
             cook.execute(pizza, _multiplier);
+            _lastBaked = std::chrono::steady_clock::now();
         }
     }
     DEBUG << "Left cook thread" << std::endl;
@@ -75,4 +78,9 @@ void plazza::PizzaParty::add(Pizza pizza)
         _pizzaQueue.push(pizza);
     }
     _cv.notify_one();
+}
+
+std::chrono::steady_clock::time_point plazza::PizzaParty::getLastBaked() const
+{
+    return _lastBaked;
 }
