@@ -1,10 +1,13 @@
 #include "Kitchen.hpp"
 #include "Debug.hpp"
 #include "IPCM.hpp"
+#include "Pizza.hpp"
 #include <chrono>
 #include <iostream>
+#include <optional>
 #include <string>
 #include <thread>
+#include "Utils.hpp"
 
 using namespace std::chrono_literals;
 
@@ -19,14 +22,30 @@ plazza::Kitchen::Kitchen(double multiplier, int cooksAmount, long long restockDe
     _lastRestock = std::chrono::steady_clock::now();
 }
 
+std::optional<plazza::Pizza> plazza::Kitchen::parseReceptionistMsg(void)
+{
+    std::optional<std::string> message = _ipc.readReceptionistMessage(_kitchenID);
+
+    if (message.has_value()) {
+        std::vector<std::string> messageVec = Utils::String::split(message.value(), " ");
+        std::optional<plazza::Pizza::Type> type = Pizza::getType(messageVec[0]);
+        std::optional<plazza::Pizza::Size> size = Pizza::getSize(messageVec[1]);
+        if (!type.has_value() || !size.has_value())
+            return std::nullopt;
+        return Pizza(type.value(), size.value());
+    }
+    return std::nullopt;
+}
+
 void plazza::Kitchen::run()
 {
     DEBUG << "Entering Kitchen loop" << std::endl;
 
     // TODO: temporary, remove this later when not needed
-    _party.add(Pizza(Pizza::Type::Regina, Pizza::Size::XL));
     while (_running) {
-        // TODO: handling pizza message here
+        std::optional<Pizza> pizza = parseReceptionistMsg();
+        if (pizza.has_value())
+            _party.add(pizza.value());
         std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
         if (currentTime - _party.getLastBaked() >= _expiry) {
             _running = false;

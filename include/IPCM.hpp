@@ -1,6 +1,7 @@
 #pragma once
 
 #include <optional>
+#include <regex>
 #include <string>
 #include <vector>
 
@@ -26,8 +27,10 @@ namespace plazza {
             void kitchenToReceptionist(int index, const std::string msg);
             void receptionistToKitchen(int index, const std::string pizzamsg);
             std::optional<std::string> readKitchenMessage(int index);
+            std::optional<std::string> readReceptionistMessage(int index);
             void openKitchen();
-            void closeKitchen(int index);
+            void closeKitchen(int index, int &openedKitchen);
+            void sendPizzaToKitchen(std::smatch matches, int index);
 
             std::vector<std::pair<int, int>> getReceptionistFds() const;
             std::vector<std::pair<int, int>> getKitchenFds() const;

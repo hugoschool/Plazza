@@ -29,5 +29,7 @@ namespace plazza {
 
             Stock _stock;
             PizzaParty _party;
+
+            std::optional<Pizza> parseReceptionistMsg(void);
     };
 }

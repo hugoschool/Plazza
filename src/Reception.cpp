@@ -15,6 +15,7 @@ plazza::Reception::Reception(plazza::Args &args) :
     _cooks(args.getCooks()),
     _restockDelay(args.getRestockDelay()),
     _nextKitchenID(0),
+    _openedKitchen(0),
     _lineRegex("(?:\\s?)+([a-zA-Z]+)\\s+(S|M|L|XL|XXL)\\s+(x[1-9][0-9]*)(?:\\s?)+")
 {
     if (_multiplier < 0 || _cooks < 0 || _restockDelay < 0)
@@ -49,12 +50,9 @@ void plazza::Reception::run()
                 continue;
             }
 
-            std::string pizzaType = matches[1];
-            std::string pizzaSize = matches[2];
-            std::string pizzaAmount = matches[3];
-
-            std::cout << "Pizza: " << pizzaType << " " << pizzaSize << " " << pizzaAmount << std::endl;
             createKitchen();
+            // faire du load balancing ici pour definir a quelle kitchen on envoie
+            _ipc.sendPizzaToKitchen(matches, 0);
         }
         // deplacer cette boucle dans un thread pour que le getline ne soit pas bloquant
         for (size_t i = 0; i < _nextKitchenID; i++) {
@@ -91,7 +89,7 @@ void plazza::Reception::interpretMessage(std::string msg)
             break;
         case StatusCode::STOP: {
             const int kitchenId = std::stoi(line_vec[1]);
-            _ipc.closeKitchen(kitchenId);
+            _ipc.closeKitchen(kitchenId, _openedKitchen);
             break;
         }
         case StatusCode::DONE:
@@ -109,6 +107,7 @@ void plazza::Reception::createKitchen()
 
     // TODO: load balancing
     _ipc.openKitchen();
+    _openedKitchen++;
     pid_t pid = fork();
 
     if (pid == -1)
