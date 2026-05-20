@@ -22,7 +22,7 @@ namespace plazza {
             size_t _kitchenID;
             IPCM &_ipc;
 
-            std::chrono::steady_clock::time_point _lastBaked;
+            std::chrono::steady_clock::time_point _creationTime;
             std::chrono::steady_clock::time_point _lastRestock;
             const std::chrono::seconds _expiry;
             const std::chrono::milliseconds _restockDelay;

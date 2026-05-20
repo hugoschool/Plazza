@@ -15,6 +15,7 @@ plazza::Kitchen::Kitchen(double multiplier, int cooksAmount, long long restockDe
     _stock(),
     _party(_multiplier, _cooksAmount)
 {
+    _creationTime = std::chrono::steady_clock::now();
     _lastRestock = std::chrono::steady_clock::now();
 }
 
@@ -41,6 +42,8 @@ void plazza::Kitchen::run()
     msg.append(" ");
     msg.append(std::to_string(_kitchenID));
     _ipc.kitchenToReceptionist(_kitchenID, msg);
-    DEBUG << "Exiting Kitchen" << std::endl;
+
+    std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
+    DEBUG << "Exiting Kitchen after " << std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - _creationTime) << std::endl;
     exit(0);
 }
