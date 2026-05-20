@@ -109,7 +109,6 @@ void plazza::Reception::createKitchen()
 
     // TODO: load balancing
     _ipc.openKitchen();
-    _nextKitchenID++;
     pid_t pid = fork();
 
     if (pid == -1)
@@ -119,4 +118,6 @@ void plazza::Reception::createKitchen()
 
         kitchen.run();
     }
+
+    _nextKitchenID++;
 }
