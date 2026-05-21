@@ -2,6 +2,7 @@
 
 #include <optional>
 #include <string>
+#include <sstream>
 
 namespace plazza {
     class Pizza {
@@ -46,5 +47,19 @@ namespace plazza {
             Size _size;
 
             bool _cooked;
+
+            template<typename T>
+            static std::optional<T> retrieveNb(std::string str)
+            {
+                int nb = 0;
+
+                std::stringstream ss(str);
+                ss >> nb;
+
+                if (ss.fail() || nb <= 0)
+                    return std::nullopt;
+
+                return static_cast<T>(nb);
+            }
     };
 }

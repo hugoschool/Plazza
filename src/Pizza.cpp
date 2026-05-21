@@ -36,6 +36,11 @@ double plazza::Pizza::getBakingTime() const
 
 std::optional<plazza::Pizza::Type> plazza::Pizza::getType(std::string str)
 {
+    std::optional optNb = retrieveNb<plazza::Pizza::Type>(str);
+
+    if (optNb.has_value())
+        return optNb.value();
+
     str = Utils::String::tolower(str);
     if (str == "regina")
         return plazza::Pizza::Type::Regina;
@@ -55,6 +60,11 @@ std::string plazza::Pizza::getType(plazza::Pizza::Type type)
 
 std::optional<plazza::Pizza::Size> plazza::Pizza::getSize(std::string str)
 {
+    std::optional optNb = retrieveNb<plazza::Pizza::Size>(str);
+
+    if (optNb.has_value())
+        return optNb.value();
+
     str = Utils::String::tolower(str);
     if (str == "s")
         return Size::S;
@@ -83,11 +93,11 @@ std::optional<plazza::Pizza> plazza::Pizza::unpack(std::string str)
 {
     std::vector<std::string> tokens = Utils::String::split(str, " ");
 
-    if (tokens.size() != 2)
+    if (tokens.size() < 2)
         return std::nullopt;
 
     std::optional type = getType(tokens[0]);
-    std::optional size = getSize(tokens[1].substr(1));
+    std::optional size = getSize(tokens[1]);
     if (!type.has_value() || !size.has_value())
         return std::nullopt;
 
