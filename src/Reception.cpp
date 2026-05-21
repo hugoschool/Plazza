@@ -4,6 +4,7 @@
 #include "Debug.hpp"
 #include "IPCM.hpp"
 #include "Kitchen.hpp"
+#include "Pizza.hpp"
 #include "Utils.hpp"
 #include <iostream>
 #include <regex>
@@ -51,11 +52,23 @@ void plazza::Reception::run()
             }
 
             // faire du load balancing ici pour definir a quelle kitchen on envoie
-            int pizzanum = std::stoi(&matches[3].str()[1]);
-            distributePizzas(matches, pizzanum);
-            while (pizzanum > 0) {
+            std::optional pizzaOpt = Pizza::unpack(token);
+            if (!pizzaOpt.has_value()) {
+                std::cerr << "Invalid pizza: " << token << std::endl;
+                continue;
+            }
+            Pizza pizza = pizzaOpt.value();
+
+            int pizzaAmount = std::stoi(matches[3].str().substr(1));
+            if (pizzaAmount <= 0) {
+                std::cerr << "Invalid pizza amount: " << matches[3] << std::endl;
+                continue;
+            }
+
+            distributePizzas(pizza, pizzaAmount);
+            while (pizzaAmount > 0) {
                 createKitchen();
-                distributePizzas(matches, pizzanum);
+                distributePizzas(pizza, pizzaAmount);
             }
         }
         // deplacer cette boucle dans un thread pour que le getline ne soit pas bloquant
@@ -73,13 +86,13 @@ void plazza::Reception::run()
     }
 }
 
-void plazza::Reception::distributePizzas(std::smatch matches, int &pizzanum)
+void plazza::Reception::distributePizzas(plazza::Pizza pizza, int &pizzanum)
 {
     for (auto kitchen: _kitchenMap) {
         while (pizzanum != 0) {
             if (kitchen.second + 1 > _cooks * 2)
                 break;
-            _ipc.sendPizzaToKitchen(matches, kitchen.first);
+            _ipc.sendPizzaToKitchen(pizza, kitchen.first);
             kitchen.second += 1;
             pizzanum--;
         }

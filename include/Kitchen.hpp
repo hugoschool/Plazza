@@ -30,7 +30,6 @@ namespace plazza {
             Stock _stock;
             PizzaParty _party;
 
-            std::optional<Pizza> parseReceptionistMsg(void);
             void createAndSendMessage(StatusCode code, std::optional<Pizza> pizza);
     };
 }

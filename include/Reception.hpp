@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Args.hpp"
-#include "Kitchen.hpp"
 #include "IPCM.hpp"
+#include "Pizza.hpp"
 #include <queue>
 #include <regex>
 
@@ -28,6 +28,6 @@ namespace plazza {
 
             void createKitchen();
             void interpretMessage(std::string);
-            void distributePizzas(std::smatch, int &pizzanum);
+            void distributePizzas(Pizza, int &pizzanum);
     };
 }

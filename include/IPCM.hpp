@@ -1,10 +1,9 @@
 #pragma once
 
+#include "Pizza.hpp"
 #include <map>
 #include <optional>
-#include <regex>
 #include <string>
-#include <vector>
 
 namespace plazza {
     enum class StatusCode {
@@ -31,7 +30,7 @@ namespace plazza {
             std::optional<std::string> readReceptionistMessage(int index);
             void openKitchen(int index);
             void closeKitchen(int index, int &openedKitchen);
-            void sendPizzaToKitchen(std::smatch matches, int index);
+            void sendPizzaToKitchen(Pizza &pizza, int index);
 
             std::map<int, std::pair<int, int>> getReceptionistFds() const;
             std::map<int, std::pair<int, int>> getKitchenFds() const;

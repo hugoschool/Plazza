@@ -22,23 +22,6 @@ plazza::Kitchen::Kitchen(double multiplier, int cooksAmount, long long restockDe
     _lastRestock = std::chrono::steady_clock::now();
 }
 
-std::optional<plazza::Pizza> plazza::Kitchen::parseReceptionistMsg(void)
-{
-    std::optional<std::string> message = _ipc.readReceptionistMessage(_kitchenID);
-
-    if (message.has_value()) {
-        DEBUG << "Kitchen " << _kitchenID << " received the following message " << message.value() << std::endl;
-
-        std::vector<std::string> messageVec = Utils::String::split(message.value(), " ");
-        std::optional<plazza::Pizza::Type> type = Pizza::getType(messageVec[0]);
-        std::optional<plazza::Pizza::Size> size = Pizza::getSize(messageVec[1]);
-        if (!type.has_value() || !size.has_value())
-            return std::nullopt;
-        return Pizza(type.value(), size.value());
-    }
-    return std::nullopt;
-}
-
 void plazza::Kitchen::createAndSendMessage(plazza::StatusCode code, std::optional<Pizza> pizza)
 {
     std::string msg = std::to_string(static_cast<int>(code));
@@ -56,12 +39,18 @@ void plazza::Kitchen::run()
 {
     DEBUG << "Entering Kitchen loop" << std::endl;
 
-    // TODO: temporary, remove this later when not needed
     while (_running) {
-        std::optional<Pizza> pizza = parseReceptionistMsg();
-        if (pizza.has_value()) {
-            _party.add(pizza.value());
-            createAndSendMessage(StatusCode::OK, std::nullopt);
+        std::optional<std::string> message = _ipc.readReceptionistMessage(_kitchenID);
+
+        if (message.has_value()) {
+            std::optional<Pizza> pizza = Pizza::unpack(message.value());
+
+            if (pizza.has_value()) {
+                _party.add(pizza.value());
+                createAndSendMessage(StatusCode::OK, std::nullopt);
+            } else {
+                DEBUG << "Unpacking pizza failed" << std::endl;
+            }
         }
         std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
         if (currentTime - _party.getLastBaked() >= _expiry) {

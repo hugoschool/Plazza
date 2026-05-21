@@ -39,13 +39,9 @@ void plazza::IPCM::openKitchen(int index)
     DEBUG << "Receptionist FDs: " << _receptionistfds.size() << std::endl;
 }
 
-void plazza::IPCM::sendPizzaToKitchen(std::smatch matches, int index)
+void plazza::IPCM::sendPizzaToKitchen(plazza::Pizza &pizza, int index)
 {
-    std::string msg(matches[1]);
-    msg += " ";
-    msg += matches[2];
-
-    receptionistToKitchen(index, msg);
+    receptionistToKitchen(index, pizza.pack());
 }
 
 void plazza::IPCM::closeKitchen(int index, int &openedKitchen)
