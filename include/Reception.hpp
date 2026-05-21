@@ -20,13 +20,14 @@ namespace plazza {
             int _cooks;
             long long _restockDelay;
             size_t _nextKitchenID;
-            int _idToSend;
             int _openedKitchen;
             std::regex _lineRegex;
             IPCM _ipc;
             std::queue<std::string> _messageQueue;
+            std::map<int, int> _kitchenMap;
 
             void createKitchen();
             void interpretMessage(std::string);
+            void distributePizzas(std::smatch, int &pizzanum);
     };
 }

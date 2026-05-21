@@ -15,7 +15,6 @@ plazza::Reception::Reception(plazza::Args &args) :
     _cooks(args.getCooks()),
     _restockDelay(args.getRestockDelay()),
     _nextKitchenID(0),
-    _idToSend(0),
     _openedKitchen(0),
     _lineRegex("(?:\\s?)+([a-zA-Z]+)\\s+(S|M|L|XL|XXL)\\s+(x[1-9][0-9]*)(?:\\s?)+")
 {
@@ -51,10 +50,13 @@ void plazza::Reception::run()
                 continue;
             }
 
-            createKitchen();
             // faire du load balancing ici pour definir a quelle kitchen on envoie
-            for (int i = 0; i < std::stoi(&matches[3].str()[1]); i++)
-                _ipc.sendPizzaToKitchen(matches, _idToSend);
+            int pizzanum = std::stoi(&matches[3].str()[1]);
+            distributePizzas(matches, pizzanum);
+            while (pizzanum > 0) {
+                createKitchen();
+                distributePizzas(matches, pizzanum);
+            }
         }
         // deplacer cette boucle dans un thread pour que le getline ne soit pas bloquant
         for (size_t i = 0; i < _nextKitchenID; i++) {
@@ -67,6 +69,19 @@ void plazza::Reception::run()
         for (size_t i = 0; i < _messageQueue.size(); i++) {
             interpretMessage(_messageQueue.front());
             _messageQueue.pop();
+        }
+    }
+}
+
+void plazza::Reception::distributePizzas(std::smatch matches, int &pizzanum)
+{
+    for (auto kitchen: _kitchenMap) {
+        while (pizzanum != 0) {
+            if (kitchen.second + 1 > _cooks * 2)
+                break;
+            _ipc.sendPizzaToKitchen(matches, kitchen.first);
+            kitchen.second += 1;
+            pizzanum--;
         }
     }
 }
@@ -92,10 +107,14 @@ void plazza::Reception::interpretMessage(std::string msg)
         case StatusCode::STOP: {
             const int kitchenId = std::stoi(line_vec[1]);
             _ipc.closeKitchen(kitchenId, _openedKitchen);
+            _kitchenMap.erase(kitchenId);
             break;
         }
-        case StatusCode::DONE:
+        case StatusCode::DONE: {
+            const int kitchenId = std::stoi(line_vec[1]);
+            _kitchenMap.at(kitchenId) -= 1;
             break;
+        }
         case StatusCode::REDISTRIBUTE:
             break;
         // TODO: missing wait on kitchen pids (or they get zombied)
@@ -119,6 +138,6 @@ void plazza::Reception::createKitchen()
 
         kitchen.run();
     }
-    _idToSend = _nextKitchenID;
+    _kitchenMap.insert({_nextKitchenID, 0});
     _nextKitchenID++;
 }
