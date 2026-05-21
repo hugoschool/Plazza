@@ -20,6 +20,7 @@ namespace plazza {
             int _cooks;
             long long _restockDelay;
             size_t _nextKitchenID;
+            int _idToSend;
             int _openedKitchen;
             std::regex _lineRegex;
             IPCM _ipc;

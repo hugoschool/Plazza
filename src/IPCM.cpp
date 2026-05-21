@@ -41,11 +41,9 @@ void plazza::IPCM::openKitchen(int index)
 
 void plazza::IPCM::sendPizzaToKitchen(std::smatch matches, int index)
 {
-    DEBUG << "Sending " << matches[0] << " of size " << matches[1] << " to kitchen " << index << std::endl;
-
-    std::string msg(matches[0]);
+    std::string msg(matches[1]);
     msg += " ";
-    msg += matches[1];
+    msg += matches[2];
 
     receptionistToKitchen(index, msg);
 }
@@ -65,14 +63,20 @@ void plazza::IPCM::closeKitchen(int index, int &openedKitchen)
 
 void plazza::IPCM::kitchenToReceptionist(int index, const std::string msg)
 {
-    DEBUG << "Sending message to receptionist from " << index << ": \"" << msg << "\"" << std::endl;
-    write(_receptionistfds.at(index).second, msg.c_str(), msg.length());
+    char message[BUFFER_SIZE];
+    memset(message, '\0', BUFFER_SIZE);
+    std::strcat(message, msg.c_str());
+    DEBUG << "Sending message to receptionist from " << index << ": \"" << message << "\"" << std::endl;
+    write(_receptionistfds.at(index).second, message, BUFFER_SIZE);
 }
 
 void plazza::IPCM::receptionistToKitchen(int index, const std::string pizzamsg)
 {
-    DEBUG << "Sending message to kitchen from " << index << ": \"" << pizzamsg << "\"" << std::endl;
-    write(_kitchensfds.at(index).second, pizzamsg.c_str(), pizzamsg.length());
+    char message[BUFFER_SIZE];
+    memset(message, '\0', BUFFER_SIZE);
+    std::strcat(message, pizzamsg.c_str());
+    DEBUG << "Sending message to kitchen from " << index << ": \"" << message << "\"" << std::endl;
+    write(_kitchensfds.at(index).second, message, BUFFER_SIZE);
 }
 
 std::optional<std::string> plazza::IPCM::readKitchenMessage(int index)
@@ -80,7 +84,7 @@ std::optional<std::string> plazza::IPCM::readKitchenMessage(int index)
     char buffer[BUFFER_SIZE];
 
     std::memset(buffer, '\0', BUFFER_SIZE);
-    if (read(_receptionistfds.at(index).first, buffer, BUFFER_SIZE - 1) <= 0) {
+    if (read(_receptionistfds.at(index).first, buffer, BUFFER_SIZE) <= 0) {
         return std::nullopt;
     };
     return std::string(buffer);
@@ -91,7 +95,7 @@ std::optional<std::string> plazza::IPCM::readReceptionistMessage(int index)
     char buffer[BUFFER_SIZE];
 
     std::memset(buffer, '\0', BUFFER_SIZE);
-    if (read(_kitchensfds.at(index).first, buffer, BUFFER_SIZE - 1) <= 0) {
+    if (read(_kitchensfds.at(index).first, buffer, BUFFER_SIZE) <= 0) {
         return std::nullopt;
     };
     return std::string(buffer);

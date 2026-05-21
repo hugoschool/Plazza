@@ -27,6 +27,8 @@ std::optional<plazza::Pizza> plazza::Kitchen::parseReceptionistMsg(void)
     std::optional<std::string> message = _ipc.readReceptionistMessage(_kitchenID);
 
     if (message.has_value()) {
+        DEBUG << "Kitchen " << _kitchenID << " received the following message " << message.value() << std::endl;
+
         std::vector<std::string> messageVec = Utils::String::split(message.value(), " ");
         std::optional<plazza::Pizza::Type> type = Pizza::getType(messageVec[0]);
         std::optional<plazza::Pizza::Size> size = Pizza::getSize(messageVec[1]);
@@ -37,6 +39,19 @@ std::optional<plazza::Pizza> plazza::Kitchen::parseReceptionistMsg(void)
     return std::nullopt;
 }
 
+void plazza::Kitchen::createAndSendMessage(plazza::StatusCode code, std::optional<Pizza> pizza)
+{
+    std::string msg = std::to_string(static_cast<int>(code));
+
+    msg.append(" ");
+    msg.append(std::to_string(_kitchenID));
+    if (pizza.has_value()) {
+        // append au message pour y ajouter la pizza
+        return;
+    }
+    _ipc.kitchenToReceptionist(_kitchenID, msg);
+}
+
 void plazza::Kitchen::run()
 {
     DEBUG << "Entering Kitchen loop" << std::endl;
@@ -44,8 +59,10 @@ void plazza::Kitchen::run()
     // TODO: temporary, remove this later when not needed
     while (_running) {
         std::optional<Pizza> pizza = parseReceptionistMsg();
-        if (pizza.has_value())
+        if (pizza.has_value()) {
             _party.add(pizza.value());
+            createAndSendMessage(StatusCode::OK, std::nullopt);
+        }
         std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
         if (currentTime - _party.getLastBaked() >= _expiry) {
             _running = false;
@@ -57,11 +74,7 @@ void plazza::Kitchen::run()
             _stock.restock();
         }
     }
-    std::string msg = std::to_string(static_cast<int>(StatusCode::STOP));
-    msg.append(" ");
-    msg.append(std::to_string(_kitchenID));
-    _ipc.kitchenToReceptionist(_kitchenID, msg);
-
+    createAndSendMessage(StatusCode::STOP, std::nullopt);
     std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
     DEBUG << "Exiting Kitchen after " << std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - _creationTime) << std::endl;
     exit(0);

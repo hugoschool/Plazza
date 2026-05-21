@@ -10,6 +10,6 @@
 // https://stackoverflow.com/a/11826787
 #define DEBUG_STREAM \
     if (ENABLE_DEBUG == false) {} \
-    else std::cerr
+    else std::clog
 
 #define DEBUG DEBUG_STREAM << "[" << __FILE__ << ":" << __LINE__ << "]: "

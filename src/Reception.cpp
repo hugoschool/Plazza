@@ -15,6 +15,7 @@ plazza::Reception::Reception(plazza::Args &args) :
     _cooks(args.getCooks()),
     _restockDelay(args.getRestockDelay()),
     _nextKitchenID(0),
+    _idToSend(0),
     _openedKitchen(0),
     _lineRegex("(?:\\s?)+([a-zA-Z]+)\\s+(S|M|L|XL|XXL)\\s+(x[1-9][0-9]*)(?:\\s?)+")
 {
@@ -52,7 +53,8 @@ void plazza::Reception::run()
 
             createKitchen();
             // faire du load balancing ici pour definir a quelle kitchen on envoie
-            _ipc.sendPizzaToKitchen(matches, 0);
+            for (int i = 0; i < std::stoi(&matches[3].str()[1]); i++)
+                _ipc.sendPizzaToKitchen(matches, _idToSend);
         }
         // deplacer cette boucle dans un thread pour que le getline ne soit pas bloquant
         for (size_t i = 0; i < _nextKitchenID; i++) {
@@ -117,6 +119,6 @@ void plazza::Reception::createKitchen()
 
         kitchen.run();
     }
-
+    _idToSend = _nextKitchenID;
     _nextKitchenID++;
 }
