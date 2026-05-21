@@ -16,7 +16,7 @@ plazza::IPCM::IPCM()
 plazza::IPCM::~IPCM()
 {}
 
-void plazza::IPCM::openKitchen()
+void plazza::IPCM::openKitchen(int index)
 {
     int kitchenpipefds[2];
     int receptionistpipefds[2];
@@ -32,8 +32,8 @@ void plazza::IPCM::openKitchen()
     if (fcntl(receptionistpipefds[0], F_SETFL, O_NONBLOCK) < 0)
         throw Exception("Pipe failed");
 
-    _kitchensfds.push_back(std::pair(kitchenpipefds[0], kitchenpipefds[1]));
-    _receptionistfds.push_back(std::pair(receptionistpipefds[0], receptionistpipefds[1]));
+    _kitchensfds.insert_or_assign(index, std::pair(kitchenpipefds[0], kitchenpipefds[1]));
+    _receptionistfds.insert_or_assign(index, std::pair(receptionistpipefds[0], receptionistpipefds[1]));
 
     DEBUG << "Kitchen FDs: " << _kitchensfds.size() << std::endl;
     DEBUG << "Receptionist FDs: " << _receptionistfds.size() << std::endl;
@@ -52,25 +52,27 @@ void plazza::IPCM::sendPizzaToKitchen(std::smatch matches, int index)
 
 void plazza::IPCM::closeKitchen(int index, int &openedKitchen)
 {
-    close(_kitchensfds[index].first);
-    close(_kitchensfds[index].second);
-    close(_receptionistfds[index].first);
-    close(_receptionistfds[index].second);
+    close(_kitchensfds.at(index).first);
+    close(_kitchensfds.at(index).second);
+    close(_receptionistfds.at(index).first);
+    close(_receptionistfds.at(index).second);
     openedKitchen--;
 
+    _kitchensfds.erase(index);
+    _receptionistfds.erase(index);
     DEBUG << "Successfully closed kitchen, there are now " << openedKitchen << " kitchens still opened" << std::endl;
 }
 
 void plazza::IPCM::kitchenToReceptionist(int index, const std::string msg)
 {
     DEBUG << "Sending message to receptionist from " << index << ": \"" << msg << "\"" << std::endl;
-    write(_receptionistfds[index].second, msg.c_str(), msg.length());
+    write(_receptionistfds.at(index).second, msg.c_str(), msg.length());
 }
 
 void plazza::IPCM::receptionistToKitchen(int index, const std::string pizzamsg)
 {
     DEBUG << "Sending message to kitchen from " << index << ": \"" << pizzamsg << "\"" << std::endl;
-    write(_kitchensfds[index].second, pizzamsg.c_str(), pizzamsg.length());
+    write(_kitchensfds.at(index).second, pizzamsg.c_str(), pizzamsg.length());
 }
 
 std::optional<std::string> plazza::IPCM::readKitchenMessage(int index)
@@ -78,7 +80,7 @@ std::optional<std::string> plazza::IPCM::readKitchenMessage(int index)
     char buffer[BUFFER_SIZE];
 
     std::memset(buffer, '\0', BUFFER_SIZE);
-    if (read(_receptionistfds[index].first, buffer, BUFFER_SIZE - 1) <= 0) {
+    if (read(_receptionistfds.at(index).first, buffer, BUFFER_SIZE - 1) <= 0) {
         return std::nullopt;
     };
     return std::string(buffer);
@@ -89,18 +91,18 @@ std::optional<std::string> plazza::IPCM::readReceptionistMessage(int index)
     char buffer[BUFFER_SIZE];
 
     std::memset(buffer, '\0', BUFFER_SIZE);
-    if (read(_kitchensfds[index].first, buffer, BUFFER_SIZE - 1) <= 0) {
+    if (read(_kitchensfds.at(index).first, buffer, BUFFER_SIZE - 1) <= 0) {
         return std::nullopt;
     };
     return std::string(buffer);
 }
 
-std::vector<std::pair<int, int>> plazza::IPCM::getKitchenFds() const
+std::map<int, std::pair<int, int>> plazza::IPCM::getKitchenFds() const
 {
     return _kitchensfds;
 }
 
-std::vector<std::pair<int, int>> plazza::IPCM::getReceptionistFds() const
+std::map<int, std::pair<int, int>> plazza::IPCM::getReceptionistFds() const
 {
     return _receptionistfds;
 }

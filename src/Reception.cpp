@@ -106,7 +106,7 @@ void plazza::Reception::createKitchen()
     DEBUG << "Creating a kitchen" << std::endl;
 
     // TODO: load balancing
-    _ipc.openKitchen();
+    _ipc.openKitchen(_nextKitchenID);
     _openedKitchen++;
     pid_t pid = fork();
 

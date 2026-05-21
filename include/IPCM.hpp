@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <optional>
 #include <regex>
 #include <string>
@@ -15,8 +16,8 @@ namespace plazza {
 
     class IPCM {
         private:
-            std::vector<std::pair<int, int>> _receptionistfds;
-            std::vector<std::pair<int, int>> _kitchensfds;
+            std::map<int, std::pair<int, int>> _receptionistfds;
+            std::map<int, std::pair<int, int>> _kitchensfds;
 
             static constexpr std::size_t BUFFER_SIZE = 256;
 
@@ -28,11 +29,11 @@ namespace plazza {
             void receptionistToKitchen(int index, const std::string pizzamsg);
             std::optional<std::string> readKitchenMessage(int index);
             std::optional<std::string> readReceptionistMessage(int index);
-            void openKitchen();
+            void openKitchen(int index);
             void closeKitchen(int index, int &openedKitchen);
             void sendPizzaToKitchen(std::smatch matches, int index);
 
-            std::vector<std::pair<int, int>> getReceptionistFds() const;
-            std::vector<std::pair<int, int>> getKitchenFds() const;
+            std::map<int, std::pair<int, int>> getReceptionistFds() const;
+            std::map<int, std::pair<int, int>> getKitchenFds() const;
     };
 }
