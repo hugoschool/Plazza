@@ -1,5 +1,9 @@
 #pragma once
 
+#include <mutex>
+#include <string>
+#include <unordered_map>
+
 namespace plazza {
     class Stock {
         public:
@@ -8,21 +12,13 @@ namespace plazza {
             Stock();
             ~Stock() = default;
 
-            unsigned int dough;
-            unsigned int tomato;
-            unsigned int gruyere;
-            unsigned int ham;
-            unsigned int mushrooms;
-            unsigned int steak;
-            unsigned int eggplant;
-            unsigned int goatCheese;
-            unsigned int chiefLove;
-
+            void consume(std::string);
             void restock();
-            // TODO: definitely add a mutex here
-            // TODO: maybe a CV too?
 
         private:
+            std::unordered_map<std::string, unsigned int> _ingredients;
+            std::mutex _mutex;
+
             void restockElement(unsigned int &);
     };
 }
