@@ -51,7 +51,7 @@ void plazza::Reception::run()
                 continue;
             }
 
-            std::optional pizzaOpt = Pizza::unpack(token);
+            std::optional pizzaOpt = Pizza::unpack(matches);
             if (!pizzaOpt.has_value()) {
                 std::cerr << "Invalid pizza: " << token << std::endl;
                 continue;
@@ -64,7 +64,8 @@ void plazza::Reception::run()
                 continue;
             }
 
-            // Load Balancing
+            DEBUG << "Current pizza: " << token << std::endl;
+
             distributePizzas(pizza, pizzaAmount);
         }
         // deplacer cette boucle dans un thread pour que le getline ne soit pas bloquant
