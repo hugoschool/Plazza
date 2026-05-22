@@ -66,6 +66,7 @@ void plazza::Reception::run()
 
             DEBUG << "Current pizza: " << token << std::endl;
 
+            // Load Balancing
             distributePizzas(pizza, pizzaAmount);
         }
         // deplacer cette boucle dans un thread pour que le getline ne soit pas bloquant
