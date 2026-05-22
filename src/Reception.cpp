@@ -52,7 +52,7 @@ void plazza::Reception::run()
             }
 
             // faire du load balancing ici pour definir a quelle kitchen on envoie
-            std::optional pizzaOpt = Pizza::unpack(token);
+            std::optional pizzaOpt = Pizza::unpack(matches);
             if (!pizzaOpt.has_value()) {
                 std::cerr << "Invalid pizza: " << token << std::endl;
                 continue;
@@ -64,6 +64,8 @@ void plazza::Reception::run()
                 std::cerr << "Invalid pizza amount: " << matches[3] << std::endl;
                 continue;
             }
+
+            DEBUG << "Current pizza: " << token << std::endl;
 
             distributePizzas(pizza, pizzaAmount);
             while (pizzaAmount > 0) {

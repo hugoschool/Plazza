@@ -104,6 +104,19 @@ std::optional<plazza::Pizza> plazza::Pizza::unpack(std::string str)
     return Pizza(type.value(), size.value());
 }
 
+std::optional<plazza::Pizza> plazza::Pizza::unpack(std::smatch matches)
+{
+    if (matches.size() < 3)
+        return std::nullopt;
+
+    std::optional type = getType(matches[1]);
+    std::optional size = getSize(matches[2]);
+    if (!type.has_value() || !size.has_value())
+        return std::nullopt;
+
+    return Pizza(type.value(), size.value());
+}
+
 void plazza::Pizza::consume(Stock &stock)
 {
     switch (_type) {
