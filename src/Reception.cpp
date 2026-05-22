@@ -8,6 +8,7 @@
 #include "Utils.hpp"
 #include <iostream>
 #include <regex>
+#include <stdexcept>
 #include <string>
 #include <unistd.h>
 
@@ -17,15 +18,40 @@ plazza::Reception::Reception(plazza::Args &args) :
     _restockDelay(args.getRestockDelay()),
     _nextKitchenID(0),
     _openedKitchen(0),
-    _lineRegex("(?:\\s?)+([a-zA-Z]+)\\s+(S|M|L|XL|XXL)\\s+(x[1-9][0-9]*)(?:\\s?)+")
+    _lineRegex("(?:\\s?)+([a-zA-Z]+)\\s+(S|M|L|XL|XXL)\\s+(x[1-9][0-9]*)(?:\\s?)+"),
+    _mutex()
 {
     if (_multiplier < 0 || _cooks < 0 || _restockDelay < 0)
         throw Exception("Invalid given argument");
 }
 
+void plazza::Reception::messageInterpretorFunc()
+{
+    while (true) {
+        {
+            std::unique_lock lock(_mutex);
+
+            if (_kitchenMap.empty())
+                continue;
+            for (size_t i = 0; i < _nextKitchenID; i++) {
+                std::optional<std::string> message = _ipc.readKitchenMessage(i);
+
+                if (!message.has_value())
+                    continue;
+                _messageQueue.push(message.value());
+            }
+            for (size_t i = 0; i < _messageQueue.size(); i++) {
+                interpretMessage(_messageQueue.front());
+                _messageQueue.pop();
+            }
+        }
+    }
+}
+
 void plazza::Reception::run()
 {
     std::string line;
+    std::thread messageInterpretor(&plazza::Reception::messageInterpretorFunc, this);
 
     while (true) {
         std::cout << "> ";
@@ -70,18 +96,8 @@ void plazza::Reception::run()
             distributePizzas(pizza, pizzaAmount);
         }
         // deplacer cette boucle dans un thread pour que le getline ne soit pas bloquant
-        for (size_t i = 0; i < _nextKitchenID; i++) {
-            std::optional<std::string> message = _ipc.readKitchenMessage(i);
-
-            if (!message.has_value())
-                continue;
-            _messageQueue.push(message.value());
-        }
-        for (size_t i = 0; i < _messageQueue.size(); i++) {
-            interpretMessage(_messageQueue.front());
-            _messageQueue.pop();
-        }
     }
+    messageInterpretor.join();
 }
 
 void plazza::Reception::distributePizzas(plazza::Pizza pizza, int &pizzanum)

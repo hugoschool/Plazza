@@ -5,6 +5,7 @@
 #include "Pizza.hpp"
 #include <queue>
 #include <regex>
+#include <thread>
 
 namespace plazza {
     class Reception {
@@ -25,9 +26,11 @@ namespace plazza {
             IPCM _ipc;
             std::queue<std::string> _messageQueue;
             std::map<int, int> _kitchenMap;
+            std::mutex _mutex;
 
             void createKitchen();
             void interpretMessage(std::string);
             void distributePizzas(Pizza, int &pizzanum);
+            void messageInterpretorFunc();
     };
 }
