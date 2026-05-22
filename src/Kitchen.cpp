@@ -16,23 +16,10 @@ plazza::Kitchen::Kitchen(double multiplier, int cooksAmount, long long restockDe
     _expiry(5s),
     _restockDelay(restockDelay),
     _stock(),
-    _party(_multiplier, _cooksAmount, _stock)
+    _party(_multiplier, _cooksAmount, _stock, ipc, kitchenID)
 {
     _creationTime = std::chrono::steady_clock::now();
     _lastRestock = std::chrono::steady_clock::now();
-}
-
-void plazza::Kitchen::createAndSendMessage(plazza::StatusCode code, std::optional<Pizza> pizza)
-{
-    std::string msg = std::to_string(static_cast<int>(code));
-
-    msg.append(" ");
-    msg.append(std::to_string(_kitchenID));
-    if (pizza.has_value()) {
-        // append au message pour y ajouter la pizza
-        return;
-    }
-    _ipc.kitchenToReceptionist(_kitchenID, msg);
 }
 
 void plazza::Kitchen::run()
@@ -47,7 +34,7 @@ void plazza::Kitchen::run()
 
             if (pizza.has_value()) {
                 _party.add(pizza.value());
-                createAndSendMessage(StatusCode::OK, std::nullopt);
+                _ipc.createAndSendMessage(_kitchenID, StatusCode::OK, std::nullopt);
             } else {
                 DEBUG << "Unpacking pizza failed" << std::endl;
             }
@@ -63,7 +50,7 @@ void plazza::Kitchen::run()
             _stock.restock();
         }
     }
-    createAndSendMessage(StatusCode::STOP, std::nullopt);
+    _ipc.createAndSendMessage(_kitchenID, StatusCode::STOP, std::nullopt);
     std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
     DEBUG << "Exiting Kitchen after " << std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - _creationTime) << std::endl;
     exit(0);

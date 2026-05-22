@@ -1,14 +1,17 @@
 #include "PizzaParty.hpp"
 #include "Cook.hpp"
 #include "Debug.hpp"
+#include "IPCM.hpp"
 #include <mutex>
 #include <thread>
 #include <iostream>
 
-plazza::PizzaParty::PizzaParty(double multiplier, int cooksAmount, Stock &stock) :
+plazza::PizzaParty::PizzaParty(double multiplier, int cooksAmount, Stock &stock, IPCM &ipc, size_t kitchenID) :
     _multiplier(multiplier),
     _cooksAmount(cooksAmount),
     _stock(stock),
+    _ipc(ipc),
+    _kitchenID(kitchenID),
     _running(true),
     _threads(),
     _pizzaQueue(),
@@ -64,6 +67,7 @@ void plazza::PizzaParty::execute()
             _pizzaQueue.pop();
 
             cook.execute(pizza, _multiplier);
+            _ipc.createAndSendMessage(_kitchenID, StatusCode::DONE, std::nullopt);
             _lastBaked = std::chrono::steady_clock::now();
         }
     }

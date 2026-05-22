@@ -1,7 +1,9 @@
 #pragma once
 
+#include "IPCM.hpp"
 #include "Pizza.hpp"
 #include <condition_variable>
+#include <cstddef>
 #include <mutex>
 #include <queue>
 #include <thread>
@@ -10,7 +12,7 @@ namespace plazza {
     class PizzaParty {
         public:
             PizzaParty() = delete;
-            PizzaParty(double multiplier, int cooksAmount, Stock &stock);
+            PizzaParty(double multiplier, int cooksAmount, Stock &stock, IPCM &ipc, size_t kitchenID);
             ~PizzaParty();
 
             void execute();
@@ -22,6 +24,8 @@ namespace plazza {
             const double _multiplier;
             const int _cooksAmount;
             Stock &_stock;
+            IPCM &_ipc;
+            size_t _kitchenID;
 
             bool _running;
             std::vector<std::thread> _threads;

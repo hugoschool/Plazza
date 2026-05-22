@@ -29,7 +29,5 @@ namespace plazza {
 
             Stock _stock;
             PizzaParty _party;
-
-            void createAndSendMessage(StatusCode code, std::optional<Pizza> pizza);
     };
 }

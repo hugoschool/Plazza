@@ -31,6 +31,7 @@ namespace plazza {
             void openKitchen(int index);
             void closeKitchen(int index, int &openedKitchen);
             void sendPizzaToKitchen(Pizza &pizza, int index);
+            void createAndSendMessage(int index, StatusCode code, std::optional<Pizza> pizza);
 
             std::map<int, std::pair<int, int>> getReceptionistFds() const;
             std::map<int, std::pair<int, int>> getKitchenFds() const;
