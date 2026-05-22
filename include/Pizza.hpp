@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Stock.hpp"
 #include <optional>
 #include <string>
 #include <sstream>
@@ -42,6 +43,9 @@ namespace plazza {
 
             std::string pack() const;
             static std::optional<Pizza> unpack(std::string);
+
+            void consume(Stock &);
+
         private:
             Type _type;
             Size _size;

@@ -5,9 +5,10 @@
 #include <thread>
 #include <iostream>
 
-plazza::PizzaParty::PizzaParty(double multiplier, int cooksAmount) :
+plazza::PizzaParty::PizzaParty(double multiplier, int cooksAmount, Stock &stock) :
     _multiplier(multiplier),
     _cooksAmount(cooksAmount),
+    _stock(stock),
     _running(true),
     _threads(),
     _pizzaQueue(),
@@ -40,7 +41,7 @@ plazza::PizzaParty::~PizzaParty()
 
 void plazza::PizzaParty::execute()
 {
-    Cook cook;
+    Cook cook(_stock);
 
     DEBUG << "Initialized cook thread" << std::endl;
     while (true) {

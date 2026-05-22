@@ -10,7 +10,7 @@ namespace plazza {
     class PizzaParty {
         public:
             PizzaParty() = delete;
-            PizzaParty(double multiplier, int cooksAmount);
+            PizzaParty(double multiplier, int cooksAmount, Stock &stock);
             ~PizzaParty();
 
             void execute();
@@ -21,6 +21,7 @@ namespace plazza {
         private:
             const double _multiplier;
             const int _cooksAmount;
+            Stock &_stock;
 
             bool _running;
             std::vector<std::thread> _threads;

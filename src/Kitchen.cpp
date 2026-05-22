@@ -16,7 +16,7 @@ plazza::Kitchen::Kitchen(double multiplier, int cooksAmount, long long restockDe
     _expiry(5s),
     _restockDelay(restockDelay),
     _stock(),
-    _party(_multiplier, _cooksAmount)
+    _party(_multiplier, _cooksAmount, _stock)
 {
     _creationTime = std::chrono::steady_clock::now();
     _lastRestock = std::chrono::steady_clock::now();

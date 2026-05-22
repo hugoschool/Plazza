@@ -103,3 +103,34 @@ std::optional<plazza::Pizza> plazza::Pizza::unpack(std::string str)
 
     return Pizza(type.value(), size.value());
 }
+
+void plazza::Pizza::consume(Stock &stock)
+{
+    switch (_type) {
+        case Type::Regina:
+            stock.consume("dough");
+            stock.consume("tomato");
+            stock.consume("gruyere");
+            stock.consume("ham");
+            stock.consume("mushrooms");
+            break;
+        case Type::Margarita:
+            stock.consume("dough");
+            stock.consume("tomato");
+            stock.consume("gruyere");
+            break;
+        case Type::Americana:
+            stock.consume("dough");
+            stock.consume("tomato");
+            stock.consume("gruyere");
+            stock.consume("steak");
+            break;
+        case Type::Fantasia:
+            stock.consume("dough");
+            stock.consume("tomato");
+            stock.consume("eggplant");
+            stock.consume("goat cheese");
+            stock.consume("chief love");
+            break;
+    }
+}
