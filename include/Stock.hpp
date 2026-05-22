@@ -19,6 +19,6 @@ namespace plazza {
             std::unordered_map<std::string, unsigned int> _ingredients;
             std::mutex _mutex;
 
-            void restockElement(unsigned int &);
+            void restockElement(std::string, unsigned int &);
     };
 }
