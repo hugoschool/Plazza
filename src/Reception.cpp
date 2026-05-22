@@ -51,7 +51,6 @@ void plazza::Reception::run()
                 continue;
             }
 
-            // faire du load balancing ici pour definir a quelle kitchen on envoie
             std::optional pizzaOpt = Pizza::unpack(token);
             if (!pizzaOpt.has_value()) {
                 std::cerr << "Invalid pizza: " << token << std::endl;
@@ -65,11 +64,8 @@ void plazza::Reception::run()
                 continue;
             }
 
+            // Load Balancing
             distributePizzas(pizza, pizzaAmount);
-            while (pizzaAmount > 0) {
-                createKitchen();
-                distributePizzas(pizza, pizzaAmount);
-            }
         }
         // deplacer cette boucle dans un thread pour que le getline ne soit pas bloquant
         for (size_t i = 0; i < _nextKitchenID; i++) {
@@ -88,14 +84,22 @@ void plazza::Reception::run()
 
 void plazza::Reception::distributePizzas(plazza::Pizza pizza, int &pizzanum)
 {
-    for (auto kitchen: _kitchenMap) {
-        while (pizzanum != 0) {
-            if (kitchen.second + 1 > _cooks * 2)
-                break;
-            _ipc.sendPizzaToKitchen(pizza, kitchen.first);
-            kitchen.second += 1;
-            pizzanum--;
+    int minID = 0;
+
+    if (_kitchenMap.size() == 0)
+        createKitchen();
+    while (pizzanum != 0) {
+        for (auto kitchen: _kitchenMap) {
+            if (kitchen.second > _kitchenMap.at(minID))
+                minID = kitchen.first;
         }
+        if (_kitchenMap.at(minID) + 1 > _cooks * 2) {
+            createKitchen();
+            minID = _nextKitchenID - 1;
+        }
+        _ipc.sendPizzaToKitchen(pizza, minID);
+        _kitchenMap.at(minID) += 1;
+        pizzanum--;
     }
 }
 
@@ -139,7 +143,6 @@ void plazza::Reception::createKitchen()
     DEBUG << "Current kitchen amount: " << _nextKitchenID << std::endl;
     DEBUG << "Creating a kitchen" << std::endl;
 
-    // TODO: load balancing
     _ipc.openKitchen(_nextKitchenID);
     _openedKitchen++;
     pid_t pid = fork();
