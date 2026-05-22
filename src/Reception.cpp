@@ -8,7 +8,6 @@
 #include "Utils.hpp"
 #include <iostream>
 #include <regex>
-#include <stdexcept>
 #include <string>
 #include <unistd.h>
 
@@ -16,6 +15,7 @@ plazza::Reception::Reception(plazza::Args &args) :
     _multiplier(args.getMultiplier()),
     _cooks(args.getCooks()),
     _restockDelay(args.getRestockDelay()),
+    _running(true),
     _nextKitchenID(0),
     _openedKitchen(0),
     _lineRegex("(?:\\s?)+([a-zA-Z]+)\\s+(S|M|L|XL|XXL)\\s+(x[1-9][0-9]*)(?:\\s?)+"),
@@ -27,23 +27,19 @@ plazza::Reception::Reception(plazza::Args &args) :
 
 void plazza::Reception::messageInterpretorFunc()
 {
-    while (true) {
-        {
-            std::unique_lock lock(_mutex);
+    while (_running) {
+        if (_kitchenMap.empty())
+            continue;
+        for (size_t i = 0; i < _nextKitchenID; i++) {
+            std::optional<std::string> message = _ipc.readKitchenMessage(i);
 
-            if (_kitchenMap.empty())
+            if (!message.has_value())
                 continue;
-            for (size_t i = 0; i < _nextKitchenID; i++) {
-                std::optional<std::string> message = _ipc.readKitchenMessage(i);
-
-                if (!message.has_value())
-                    continue;
-                _messageQueue.push(message.value());
-            }
-            for (size_t i = 0; i < _messageQueue.size(); i++) {
-                interpretMessage(_messageQueue.front());
-                _messageQueue.pop();
-            }
+            _messageQueue.push(message.value());
+        }
+        for (size_t i = 0; i < _messageQueue.size(); i++) {
+            std::string message = _messageQueue.pop();
+            interpretMessage(message);
         }
     }
 }
@@ -53,7 +49,7 @@ void plazza::Reception::run()
     std::string line;
     std::thread messageInterpretor(&plazza::Reception::messageInterpretorFunc, this);
 
-    while (true) {
+    while (_running) {
         std::cout << "> ";
         if (!std::getline(std::cin, line))
             break;
@@ -95,8 +91,8 @@ void plazza::Reception::run()
             // Load Balancing
             distributePizzas(pizza, pizzaAmount);
         }
-        // deplacer cette boucle dans un thread pour que le getline ne soit pas bloquant
     }
+    _running = false;
     messageInterpretor.join();
 }
 

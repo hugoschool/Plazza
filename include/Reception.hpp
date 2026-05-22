@@ -3,9 +3,8 @@
 #include "Args.hpp"
 #include "IPCM.hpp"
 #include "Pizza.hpp"
-#include <queue>
+#include "SafeQueue.hpp"
 #include <regex>
-#include <thread>
 
 namespace plazza {
     class Reception {
@@ -20,11 +19,13 @@ namespace plazza {
             double _multiplier;
             int _cooks;
             long long _restockDelay;
+            bool _running;
+
             size_t _nextKitchenID;
             int _openedKitchen;
             std::regex _lineRegex;
             IPCM _ipc;
-            std::queue<std::string> _messageQueue;
+            plazza::SafeQueue<std::string> _messageQueue;
             std::map<int, int> _kitchenMap;
             std::mutex _mutex;
 
