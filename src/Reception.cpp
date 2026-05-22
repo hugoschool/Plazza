@@ -86,13 +86,14 @@ void plazza::Reception::run()
 
 void plazza::Reception::distributePizzas(plazza::Pizza pizza, int &pizzanum)
 {
-    int minID = 0;
+    int minID;
 
     if (_kitchenMap.size() == 0)
         createKitchen();
     while (pizzanum != 0) {
+        minID = 0;
         for (auto kitchen: _kitchenMap) {
-            if (kitchen.second > _kitchenMap.at(minID))
+            if (kitchen.second < _kitchenMap.at(minID))
                 minID = kitchen.first;
         }
         if (_kitchenMap.at(minID) + 1 > _cooks * 2) {
