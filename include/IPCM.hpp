@@ -4,6 +4,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <mqueue.h>
 
 namespace plazza {
     enum class StatusCode {
@@ -11,12 +12,13 @@ namespace plazza {
         STOP = 500,
         DONE = 250,
         REDISTRIBUTE = 400,
+        STATUS = 300,
     };
 
     class IPCM {
         private:
-            std::map<int, std::pair<int, int>> _receptionistfds;
-            std::map<int, std::pair<int, int>> _kitchensfds;
+            std::map<int, mqd_t> _receptionistQueues;
+            std::map<int, mqd_t> _kitchenQueues;
 
             static constexpr std::size_t BUFFER_SIZE = 256;
 
@@ -33,7 +35,7 @@ namespace plazza {
             void sendPizzaToKitchen(Pizza &pizza, int index);
             void createAndSendMessage(int index, StatusCode code, std::optional<Pizza> pizza);
 
-            std::map<int, std::pair<int, int>> getReceptionistFds() const;
-            std::map<int, std::pair<int, int>> getKitchenFds() const;
+            std::map<int, mqd_t> getReceptionistQueues() const;
+            std::map<int, mqd_t> getKitchenQueues() const;
     };
 }
