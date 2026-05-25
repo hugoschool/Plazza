@@ -34,17 +34,14 @@ void plazza::Reception::messageInterpretorFunc()
     while (_running) {
         if (_kitchenMap.empty())
             continue;
-        for (size_t i = 0; i < _nextKitchenID; i++) {
-            try {
-                _kitchenMap.at(i);
-            } catch (std::out_of_range) {break;}
-            std::optional<std::string> message = _ipc.readKitchenMessage(i);
+        for (auto &[kitchenId, content] : _kitchenMap) {
+            std::optional<std::string> message = _ipc.readKitchenMessage(kitchenId);
 
             if (!message.has_value())
                 continue;
             _messageQueue.push(message.value());
         }
-        for (size_t i = 0; i < _messageQueue.size(); i++) {
+        while (!_messageQueue.empty()) {
             std::string message = _messageQueue.pop();
             interpretMessage(message);
         }
@@ -155,6 +152,7 @@ void plazza::Reception::distributePizzas(plazza::Pizza pizza, int &pizzanum)
 
 void plazza::Reception::interpretMessage(std::string msg)
 {
+    DEBUG << "Interpreting message: \"" << msg << "\"" << std::endl;
     std::vector<std::string> line_vec = Utils::String::split(msg, " ");
 
     if (line_vec.size() == 0)
