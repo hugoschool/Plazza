@@ -24,7 +24,7 @@ plazza::Kitchen::Kitchen(double multiplier, int cooksAmount, long long restockDe
 
 void plazza::Kitchen::sendStatus()
 {
-    size_t pizzas = _party.getQueueSize();
+    size_t pizzas = _party.getCurrentlyCookingAmount();
     std::string msg = std::to_string(static_cast<int>(StatusCode::STATUS));
 
     msg.append(" ");
