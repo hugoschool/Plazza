@@ -16,6 +16,11 @@ namespace plazza {
             void run();
 
         private:
+            struct KitchenContent {
+                int pizzaAmount;
+                pid_t pid;
+            };
+
             double _multiplier;
             int _cooks;
             long long _restockDelay;
@@ -26,7 +31,7 @@ namespace plazza {
             std::regex _lineRegex;
             IPCM _ipc;
             plazza::SafeQueue<std::string> _messageQueue;
-            std::map<int, int> _kitchenMap;
+            std::map<size_t, KitchenContent> _kitchenMap;
             std::mutex _mutex;
 
             void createKitchen();

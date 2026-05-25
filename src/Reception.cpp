@@ -6,12 +6,14 @@
 #include "Kitchen.hpp"
 #include "Pizza.hpp"
 #include "Utils.hpp"
+#include <cstdlib>
 #include <iostream>
 #include <mutex>
 #include <regex>
 #include <stdexcept>
 #include <string>
 #include <unistd.h>
+#include <sys/wait.h>
 
 plazza::Reception::Reception(plazza::Args &args) :
     _multiplier(args.getMultiplier()),
@@ -58,7 +60,7 @@ void plazza::Reception::askStatus()
 
 void plazza::Reception::printStatus(std::vector<std::string> line_vec)
 {
-    std::cout << "Kitchen " << std::stoi(line_vec[1]) << " currently has " << _kitchenMap.at(std::stoi(line_vec[1])) << " pizzas in its queue." << std::endl;
+    std::cout << "Kitchen " << std::stoi(line_vec[1]) << " currently has " << _kitchenMap.at(std::stoi(line_vec[1])).pizzaAmount << " pizzas in its queue." << std::endl;
     for (int i = 2; i < _cooks + 2; i++) {
         std::cout << "Cook number " << i - 1;
         if (line_vec[i] == "cooking") {
@@ -138,15 +140,15 @@ void plazza::Reception::distributePizzas(plazza::Pizza pizza, int &pizzanum)
     while (pizzanum != 0) {
         minID = _kitchenMap.begin()->first;
         for (auto &kitchen: _kitchenMap) {
-            if (kitchen.second < _kitchenMap.at(minID))
+            if (kitchen.second.pizzaAmount < _kitchenMap.at(minID).pizzaAmount)
                 minID = kitchen.first;
         }
-        if (_kitchenMap.at(minID) + 1 > _cooks * 2) {
+        if (_kitchenMap.at(minID).pizzaAmount + 1 > _cooks * 2) {
             createKitchen();
             minID = _nextKitchenID - 1;
         }
         _ipc.sendPizzaToKitchen(pizza, minID);
-        _kitchenMap.at(minID) += 1;
+        _kitchenMap.at(minID).pizzaAmount += 1;
         pizzanum--;
     }
 }
@@ -172,12 +174,17 @@ void plazza::Reception::interpretMessage(std::string msg)
         case StatusCode::STOP: {
             const int kitchenId = std::stoi(line_vec[1]);
             _ipc.closeKitchen(kitchenId, _openedKitchen);
+
+            KitchenContent &content = _kitchenMap.at(kitchenId);
+            if (waitpid(content.pid, NULL, 0) == -1) {
+                std::cerr << "Waiting for pid " << content.pid << " failed." << std::endl;
+            }
             _kitchenMap.erase(kitchenId);
             break;
         }
         case StatusCode::DONE: {
             const int kitchenId = std::stoi(line_vec[1]);
-            _kitchenMap.at(kitchenId) -= 1;
+            _kitchenMap.at(kitchenId).pizzaAmount -= 1;
             break;
         }
         case StatusCode::REDISTRIBUTE:
@@ -186,7 +193,6 @@ void plazza::Reception::interpretMessage(std::string msg)
             printStatus(line_vec);
             break;
         }
-        // TODO: missing wait on kitchen pids (or they get zombied)
     }
 }
 
@@ -205,7 +211,11 @@ void plazza::Reception::createKitchen()
         Kitchen kitchen(_multiplier, _cooks, _restockDelay, _nextKitchenID, _ipc);
 
         kitchen.run();
+        return;
     }
-    _kitchenMap.insert({_nextKitchenID, 0});
+    _kitchenMap.insert({_nextKitchenID, {
+        .pizzaAmount = 0,
+        .pid = pid,
+    }});
     _nextKitchenID++;
 }
