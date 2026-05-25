@@ -20,6 +20,7 @@ namespace plazza {
 
             std::chrono::steady_clock::time_point getLastBaked() const;
             std::size_t getQueueSize();
+            int getCurrentlyCookingAmount();
 
         private:
             const double _multiplier;
@@ -29,6 +30,7 @@ namespace plazza {
             size_t _kitchenID;
 
             bool _running;
+            int _currentlyCookingAmount;
             std::vector<std::thread> _threads;
             SafeQueue<Pizza> _pizzaQueue;
             std::condition_variable _cv;

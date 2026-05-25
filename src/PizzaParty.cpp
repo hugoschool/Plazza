@@ -14,6 +14,7 @@ plazza::PizzaParty::PizzaParty(double multiplier, int cooksAmount, Stock &stock,
     _ipc(ipc),
     _kitchenID(kitchenID),
     _running(true),
+    _currentlyCookingAmount(0),
     _threads(),
     _pizzaQueue(),
     _cv(),
@@ -65,9 +66,20 @@ void plazza::PizzaParty::execute()
 
         DEBUG << "New task has been given, cook is going to execute it" << std::endl;
 
-        Pizza &pizza = _pizzaQueue.front();
+        Pizza pizza = _pizzaQueue.pop();
+        {
+            std::unique_lock lock(_mutex);
+
+            _currentlyCookingAmount++;
+            DEBUG << "Pizzas currently cooking: " << _currentlyCookingAmount << std::endl;
+        }
         cook.execute(pizza, _multiplier);
-        _pizzaQueue.pop();
+        {
+            std::unique_lock lock(_mutex);
+
+            _currentlyCookingAmount--;
+            DEBUG << "Pizzas currently cooking: " << _currentlyCookingAmount << std::endl;
+        }
 
         _ipc.createAndSendMessage(_kitchenID, StatusCode::DONE, std::nullopt);
         _lastBaked = std::chrono::steady_clock::now();
@@ -90,4 +102,11 @@ std::chrono::steady_clock::time_point plazza::PizzaParty::getLastBaked() const
 std::size_t plazza::PizzaParty::getQueueSize()
 {
     return _pizzaQueue.size();
+}
+
+int plazza::PizzaParty::getCurrentlyCookingAmount()
+{
+    std::unique_lock lock(_mutex);
+
+    return _currentlyCookingAmount;
 }
