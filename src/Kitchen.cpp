@@ -22,6 +22,29 @@ plazza::Kitchen::Kitchen(double multiplier, int cooksAmount, long long restockDe
     _lastRestock = std::chrono::steady_clock::now();
 }
 
+void plazza::Kitchen::sendStatus()
+{
+    size_t pizzas = _party.getQueueSize();
+    std::string msg = std::to_string(static_cast<int>(StatusCode::STATUS));
+
+    msg.append(" ");
+    msg.append(std::to_string(_kitchenID));
+    for (int i = 0; i < _cooksAmount; i++) {
+        if (i < static_cast<int>(pizzas)) {
+            msg.append(" cooking");
+        } else {
+            msg.append(" free");
+        }
+    }
+    std::unordered_map<std::string, unsigned int> ingredients = _stock.getIngredients();
+    for (auto ingredient: ingredients) {
+        msg.append(" " + ingredient.first);
+        msg.append(" ");
+        msg.append(std::to_string(ingredient.second));
+    }
+    _ipc.kitchenToReceptionist(_kitchenID, msg);
+}
+
 void plazza::Kitchen::run()
 {
     DEBUG << "Entering Kitchen loop" << std::endl;
@@ -35,8 +58,10 @@ void plazza::Kitchen::run()
             if (pizza.has_value()) {
                 _party.add(pizza.value());
                 _ipc.createAndSendMessage(_kitchenID, StatusCode::OK, std::nullopt);
+            } else if (message.value() == "status") {
+                sendStatus();
             } else {
-                DEBUG << "Unpacking pizza failed" << std::endl;
+                DEBUG << "Couldn't identify the following message : " << message.value() << std::endl;
             }
         }
         std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();

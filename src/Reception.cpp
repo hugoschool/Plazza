@@ -7,7 +7,9 @@
 #include "Pizza.hpp"
 #include "Utils.hpp"
 #include <iostream>
+#include <mutex>
 #include <regex>
+#include <stdexcept>
 #include <string>
 #include <unistd.h>
 
@@ -31,6 +33,9 @@ void plazza::Reception::messageInterpretorFunc()
         if (_kitchenMap.empty())
             continue;
         for (size_t i = 0; i < _nextKitchenID; i++) {
+            try {
+                _kitchenMap.at(i);
+            } catch (std::out_of_range) {break;}
             std::optional<std::string> message = _ipc.readKitchenMessage(i);
 
             if (!message.has_value())
@@ -41,6 +46,30 @@ void plazza::Reception::messageInterpretorFunc()
             std::string message = _messageQueue.pop();
             interpretMessage(message);
         }
+    }
+}
+
+void plazza::Reception::askStatus()
+{
+    for (auto kitchen: _kitchenMap) {
+        _ipc.receptionistToKitchen(kitchen.first, "status");
+    }
+}
+
+void plazza::Reception::printStatus(std::vector<std::string> line_vec)
+{
+    std::cout << "Kitchen " << std::stoi(line_vec[1]) << " currently has " << _kitchenMap.at(std::stoi(line_vec[1])) << " pizzas in its queue." << std::endl;
+    for (int i = 2; i < _cooks + 2; i++) {
+        std::cout << "Cook number " << i - 1;
+        if (line_vec[i] == "cooking") {
+            std::cout << " is cooking." << std::endl;
+        } else {
+            std::cout << " is not cooking." << std::endl;
+        }
+    }
+    std::cout << "Its current stock is the following:" << std::endl;
+    for (size_t i = 2 + _cooks; i < line_vec.size() - 1; i += 2) {
+        std::cout << line_vec[i + 1] << " pieces of " << line_vec[i] << " left." << std::endl;
     }
 }
 
@@ -58,6 +87,10 @@ void plazza::Reception::run()
 
         if (line == "quit")
             break;
+        if (line == "status") {
+            askStatus();
+            continue;
+        }
 
         std::vector<std::string> tokens = Utils::String::split(line, ";");
         if (tokens.size() == 0) {
@@ -104,7 +137,7 @@ void plazza::Reception::distributePizzas(plazza::Pizza pizza, int &pizzanum)
         createKitchen();
     while (pizzanum != 0) {
         minID = 0;
-        for (auto kitchen: _kitchenMap) {
+        for (auto &kitchen: _kitchenMap) {
             if (kitchen.second < _kitchenMap.at(minID))
                 minID = kitchen.first;
         }
@@ -149,6 +182,10 @@ void plazza::Reception::interpretMessage(std::string msg)
         }
         case StatusCode::REDISTRIBUTE:
             break;
+        case StatusCode::STATUS: {
+            printStatus(line_vec);
+            break;
+        }
         // TODO: missing wait on kitchen pids (or they get zombied)
     }
 }

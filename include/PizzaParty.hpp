@@ -19,6 +19,7 @@ namespace plazza {
             void add(Pizza);
 
             std::chrono::steady_clock::time_point getLastBaked() const;
+            std::size_t getQueueSize() const;
 
         private:
             const double _multiplier;

@@ -15,6 +15,7 @@ namespace plazza {
             void consume(std::string);
             void restock();
 
+            std::unordered_map<std::string, unsigned int> getIngredients() const;
         private:
             std::unordered_map<std::string, unsigned int> _ingredients;
             std::mutex _mutex;

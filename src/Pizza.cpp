@@ -142,8 +142,8 @@ void plazza::Pizza::consume(Stock &stock)
             stock.consume("dough");
             stock.consume("tomato");
             stock.consume("eggplant");
-            stock.consume("goat cheese");
-            stock.consume("chief love");
+            stock.consume("goatcheese");
+            stock.consume("chieflove");
             break;
     }
 }

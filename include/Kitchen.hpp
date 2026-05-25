@@ -13,7 +13,7 @@ namespace plazza {
             ~Kitchen() = default;
 
             void run();
-
+            void sendStatus();
         private:
             double _multiplier;
             int _cooksAmount;

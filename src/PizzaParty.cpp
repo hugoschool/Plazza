@@ -2,6 +2,7 @@
 #include "Cook.hpp"
 #include "Debug.hpp"
 #include "IPCM.hpp"
+#include "Pizza.hpp"
 #include <mutex>
 #include <thread>
 #include <iostream>
@@ -64,9 +65,9 @@ void plazza::PizzaParty::execute()
             DEBUG << "New task has been given, cook is going to execute it" << std::endl;
 
             Pizza pizza = std::move(_pizzaQueue.front());
-            _pizzaQueue.pop();
-
             cook.execute(pizza, _multiplier);
+
+            _pizzaQueue.pop();
             _ipc.createAndSendMessage(_kitchenID, StatusCode::DONE, std::nullopt);
             _lastBaked = std::chrono::steady_clock::now();
         }
@@ -88,4 +89,9 @@ void plazza::PizzaParty::add(Pizza pizza)
 std::chrono::steady_clock::time_point plazza::PizzaParty::getLastBaked() const
 {
     return _lastBaked;
+}
+
+std::size_t plazza::PizzaParty::getQueueSize() const
+{
+    return _pizzaQueue.size();
 }

@@ -12,8 +12,8 @@ plazza::Stock::Stock() :
         {"mushrooms", MAX_UNIT_AMOUNT},
         {"steak", MAX_UNIT_AMOUNT},
         {"eggplant", MAX_UNIT_AMOUNT},
-        {"goat cheese", MAX_UNIT_AMOUNT},
-        {"chief love", MAX_UNIT_AMOUNT}
+        {"goatcheese", MAX_UNIT_AMOUNT},
+        {"chieflove", MAX_UNIT_AMOUNT}
     }),
     _mutex()
 {
@@ -26,6 +26,11 @@ void plazza::Stock::restock()
     for (auto &[ingredient, element] : _ingredients) {
         restockElement(ingredient, element);
     }
+}
+
+std::unordered_map<std::string, unsigned int> plazza::Stock::getIngredients() const
+{
+    return _ingredients;
 }
 
 void plazza::Stock::consume(std::string ingredient)

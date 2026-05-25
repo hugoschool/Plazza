@@ -33,5 +33,7 @@ namespace plazza {
             void interpretMessage(std::string);
             void distributePizzas(Pizza, int &pizzanum);
             void messageInterpretorFunc();
+            void askStatus();
+            void printStatus(std::vector<std::string>);
     };
 }
