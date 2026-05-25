@@ -2,10 +2,10 @@
 
 #include "IPCM.hpp"
 #include "Pizza.hpp"
+#include "SafeQueue.hpp"
 #include <condition_variable>
 #include <cstddef>
 #include <mutex>
-#include <queue>
 #include <thread>
 
 namespace plazza {
@@ -19,7 +19,7 @@ namespace plazza {
             void add(Pizza);
 
             std::chrono::steady_clock::time_point getLastBaked() const;
-            std::size_t getQueueSize() const;
+            std::size_t getQueueSize();
 
         private:
             const double _multiplier;
@@ -30,7 +30,7 @@ namespace plazza {
 
             bool _running;
             std::vector<std::thread> _threads;
-            std::queue<Pizza> _pizzaQueue;
+            SafeQueue<Pizza> _pizzaQueue;
             std::condition_variable _cv;
             std::mutex _mutex;
 

@@ -26,7 +26,7 @@ namespace plazza {
                 if (_queue.empty())
                     return false;
 
-                value = _queue.front();
+                value = std::move(_queue.front());
                 _queue.pop();
                 return true;
             }
@@ -37,7 +37,7 @@ namespace plazza {
 
                 _cv.wait(lock, [this]{ return !_queue.empty(); });
 
-                T value = _queue.front();
+                T value = std::move(_queue.front());
                 _queue.pop();
                 return value;
             }
@@ -47,6 +47,20 @@ namespace plazza {
                 std::unique_lock lock(_mutex);
 
                 return _queue.size();
+            }
+
+            bool empty()
+            {
+                std::unique_lock lock(_mutex);
+
+                return _queue.empty();
+            }
+
+            T &front()
+            {
+                std::unique_lock lock(_mutex);
+
+                return _queue.front();
             }
 
         private:

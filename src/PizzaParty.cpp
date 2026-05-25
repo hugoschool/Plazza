@@ -61,28 +61,24 @@ void plazza::PizzaParty::execute()
 
             if (_pizzaQueue.empty())
                 continue;
-
-            DEBUG << "New task has been given, cook is going to execute it" << std::endl;
-
-            Pizza pizza = std::move(_pizzaQueue.front());
-            cook.execute(pizza, _multiplier);
-
-            _pizzaQueue.pop();
-            _ipc.createAndSendMessage(_kitchenID, StatusCode::DONE, std::nullopt);
-            _lastBaked = std::chrono::steady_clock::now();
         }
+
+        DEBUG << "New task has been given, cook is going to execute it" << std::endl;
+
+        Pizza &pizza = _pizzaQueue.front();
+        cook.execute(pizza, _multiplier);
+        _pizzaQueue.pop();
+
+        _ipc.createAndSendMessage(_kitchenID, StatusCode::DONE, std::nullopt);
+        _lastBaked = std::chrono::steady_clock::now();
     }
     DEBUG << "Left cook thread" << std::endl;
 }
 
 void plazza::PizzaParty::add(Pizza pizza)
 {
-    {
-        std::unique_lock<std::mutex> lock(_mutex);
-
-        DEBUG << "Adding a new pizza to the queue" << std::endl;
-        _pizzaQueue.push(pizza);
-    }
+    DEBUG << "Adding a new pizza to the queue" << std::endl;
+    _pizzaQueue.push(pizza);
     _cv.notify_one();
 }
 
@@ -91,7 +87,7 @@ std::chrono::steady_clock::time_point plazza::PizzaParty::getLastBaked() const
     return _lastBaked;
 }
 
-std::size_t plazza::PizzaParty::getQueueSize() const
+std::size_t plazza::PizzaParty::getQueueSize()
 {
     return _pizzaQueue.size();
 }
