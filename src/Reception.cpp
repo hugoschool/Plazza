@@ -185,8 +185,6 @@ void plazza::Reception::interpretMessage(std::string msg)
             _kitchenMap.at(kitchenId).pizzaAmount -= 1;
             break;
         }
-        case StatusCode::REDISTRIBUTE:
-            break;
         case StatusCode::STATUS: {
             printStatus(line_vec);
             break;
