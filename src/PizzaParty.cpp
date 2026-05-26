@@ -81,7 +81,7 @@ void plazza::PizzaParty::execute()
             DEBUG << "Pizzas currently cooking: " << _currentlyCookingAmount << std::endl;
         }
 
-        _ipc.createAndSendMessage(_kitchenID, StatusCode::DONE, std::nullopt);
+        _ipc.createAndSendMessage(_kitchenID, StatusCode::DONE);
         _lastBaked = std::chrono::steady_clock::now();
     }
     DEBUG << "Left cook thread" << std::endl;

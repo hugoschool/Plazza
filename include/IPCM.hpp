@@ -11,7 +11,6 @@ namespace plazza {
         OK = 200,
         STOP = 500,
         DONE = 250,
-        REDISTRIBUTE = 400,
         STATUS = 300,
     };
 
@@ -33,7 +32,7 @@ namespace plazza {
             void openKitchen(int index);
             void closeKitchen(int index, int &openedKitchen);
             void sendPizzaToKitchen(Pizza &pizza, int index);
-            void createAndSendMessage(int index, StatusCode code, std::optional<Pizza> pizza);
+            void createAndSendMessage(int index, StatusCode code);
 
             std::map<int, mqd_t> getReceptionistQueues() const;
             std::map<int, mqd_t> getKitchenQueues() const;

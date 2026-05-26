@@ -57,7 +57,7 @@ void plazza::Kitchen::run()
 
             if (pizza.has_value()) {
                 _party.add(pizza.value());
-                _ipc.createAndSendMessage(_kitchenID, StatusCode::OK, std::nullopt);
+                _ipc.createAndSendMessage(_kitchenID, StatusCode::OK);
             } else if (message.value() == "status") {
                 sendStatus();
             } else {
@@ -75,7 +75,7 @@ void plazza::Kitchen::run()
             _stock.restock();
         }
     }
-    _ipc.createAndSendMessage(_kitchenID, StatusCode::STOP, std::nullopt);
+    _ipc.createAndSendMessage(_kitchenID, StatusCode::STOP);
     std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
     DEBUG << "Exiting Kitchen after " << std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - _creationTime) << std::endl;
     exit(0);

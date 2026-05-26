@@ -63,16 +63,12 @@ void plazza::IPCM::closeKitchen(int index, int &openedKitchen)
     DEBUG << "Successfully closed kitchen, there are now " << openedKitchen << " kitchens still opened" << std::endl;
 }
 
-void plazza::IPCM::createAndSendMessage(int index, plazza::StatusCode code, std::optional<Pizza> pizza)
+void plazza::IPCM::createAndSendMessage(int index, plazza::StatusCode code)
 {
     std::string msg = std::to_string(static_cast<int>(code));
 
     msg.append(" ");
     msg.append(std::to_string(index));
-    if (pizza.has_value()) {
-        // append au message pour y ajouter la pizza
-        return;
-    }
     kitchenToReceptionist(index, msg);
 }
 
