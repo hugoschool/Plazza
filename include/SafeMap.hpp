@@ -1,4 +1,6 @@
 #pragma once
+#include <functional>
+#include <memory>
 #include <mutex>
 #include <map>
 #include <vector>
@@ -30,6 +32,14 @@ namespace plazza {
                 std::unique_lock lock(_mutex);
 
                 return _map.at(key);
+            };
+
+            template<typename F>
+            void applyAt(T key, std::function<F> fct) {
+                std::unique_lock lock(_mutex);
+
+                U &elem = _map.at(key);
+                fct(elem);
             };
 
             size_t size() {

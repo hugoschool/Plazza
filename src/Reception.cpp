@@ -147,7 +147,10 @@ void plazza::Reception::distributePizzas(plazza::Pizza pizza, int &pizzanum)
             minID = _nextKitchenID - 1;
         }
         _ipc.sendPizzaToKitchen(pizza, minID);
-        _kitchenMap.at(minID).pizzaAmount += 1;
+        _kitchenMap.applyAt<void(plazza::Reception::KitchenContent &)>(minID, [](plazza::Reception::KitchenContent &elem)
+        {
+            elem.pizzaAmount += 1;
+        });
         pizzanum--;
     }
 }
@@ -184,7 +187,10 @@ void plazza::Reception::interpretMessage(std::string msg)
         }
         case StatusCode::DONE: {
             const int kitchenId = std::stoi(line_vec[1]);
-            _kitchenMap.at(kitchenId).pizzaAmount -= 1;
+            _kitchenMap.applyAt<void(plazza::Reception::KitchenContent &)>(kitchenId, [](plazza::Reception::KitchenContent &elem)
+            {
+                elem.pizzaAmount -= 1;
+            });
             break;
         }
         case StatusCode::STATUS: {
