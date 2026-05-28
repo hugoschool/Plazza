@@ -34,12 +34,12 @@ void plazza::Reception::messageInterpretorFunc()
     while (_running) {
         if (_kitchenMap.empty())
             continue;
-        for (auto &[kitchenId, content] : _kitchenMap) {
-            std::optional<std::string> message = _ipc.readKitchenMessage(kitchenId);
+        std::vector<std::size_t> ids = _kitchenMap.keys();
+        for (std::size_t id: ids) {
+            std::optional<std::string> message = _ipc.readKitchenMessage(id);
 
-            if (!message.has_value())
-                continue;
-            _messageQueue.push(message.value());
+            if (message.has_value())
+                _messageQueue.push(message.value());
         }
         while (!_messageQueue.empty()) {
             std::string message = _messageQueue.pop();
@@ -50,8 +50,9 @@ void plazza::Reception::messageInterpretorFunc()
 
 void plazza::Reception::askStatus()
 {
-    for (auto kitchen: _kitchenMap) {
-        _ipc.receptionistToKitchen(kitchen.first, "status");
+    std::vector<std::size_t> ids = _kitchenMap.keys();
+    for (std::size_t id: ids) {
+        _ipc.receptionistToKitchen(id, "status");
     }
 }
 
@@ -136,9 +137,10 @@ void plazza::Reception::distributePizzas(plazza::Pizza pizza, int &pizzanum)
         createKitchen();
     while (pizzanum != 0) {
         minID = _kitchenMap.begin()->first;
-        for (auto &kitchen: _kitchenMap) {
-            if (kitchen.second.pizzaAmount < _kitchenMap.at(minID).pizzaAmount)
-                minID = kitchen.first;
+        std::vector<std::size_t> ids = _kitchenMap.keys();
+        for (std::size_t id: ids) {
+            if (_kitchenMap.at(id).pizzaAmount < _kitchenMap.at(minID).pizzaAmount)
+                minID = id;
         }
         if (_kitchenMap.at(minID).pizzaAmount + 1 > _cooks * 2) {
             createKitchen();
@@ -209,9 +211,9 @@ void plazza::Reception::createKitchen()
         kitchen.run();
         return;
     }
-    _kitchenMap.insert({_nextKitchenID, {
+    _kitchenMap.insert(_nextKitchenID, {
         .pizzaAmount = 0,
         .pid = pid,
-    }});
+    });
     _nextKitchenID++;
 }

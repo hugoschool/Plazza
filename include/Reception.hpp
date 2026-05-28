@@ -31,7 +31,7 @@ namespace plazza {
             std::regex _lineRegex;
             IPCM _ipc;
             plazza::SafeQueue<std::string> _messageQueue;
-            std::map<size_t, KitchenContent> _kitchenMap;
+            plazza::SafeMap<size_t, KitchenContent> _kitchenMap;
             std::mutex _mutex;
 
             void createKitchen();

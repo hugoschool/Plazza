@@ -35,8 +35,8 @@ void plazza::IPCM::openKitchen(int index)
     if (receptionistQueue == static_cast<mqd_t>(-1))
         throw Exception("Failed to create receptionist queue");
 
-    _kitchenQueues.insert_or_assign(index, kitchenQueue);
-    _receptionistQueues.insert_or_assign(index, receptionistQueue);
+    _kitchenQueues.insert(index, kitchenQueue);
+    _receptionistQueues.insert(index, receptionistQueue);
 
     DEBUG << "Kitchen queue size: " << _kitchenQueues.size() << std::endl;
     DEBUG << "Receptionist queue size: " << _receptionistQueues.size() << std::endl;
@@ -104,14 +104,4 @@ std::optional<std::string> plazza::IPCM::readReceptionistMessage(int index)
     if (bytes == -1)
         return std::nullopt;
     return std::string(buffer);
-}
-
-std::map<int, mqd_t> plazza::IPCM::getKitchenQueues() const
-{
-    return _kitchenQueues;
-}
-
-std::map<int, mqd_t> plazza::IPCM::getReceptionistQueues() const
-{
-    return _receptionistQueues;
 }
