@@ -31,7 +31,13 @@ plazza::Reception::Reception(plazza::Args &args) :
 
 void plazza::Reception::messageInterpretorFunc()
 {
-    while (_running) {
+    while (true) {
+        {
+            std::unique_lock lock(_mutex);
+
+            if (_running == false)
+                break;
+        }
         if (_kitchenMap.empty())
             continue;
         std::vector<std::size_t> ids = _kitchenMap.keys();
@@ -78,7 +84,13 @@ void plazza::Reception::run()
     std::string line;
     std::thread messageInterpretor(&plazza::Reception::messageInterpretorFunc, this);
 
-    while (_running) {
+    while (true) {
+        {
+            std::unique_lock lock(_mutex);
+
+            if (_running == false)
+                break;
+        }
         std::cout << "> ";
         if (!std::getline(std::cin, line))
             break;
@@ -125,7 +137,11 @@ void plazza::Reception::run()
             distributePizzas(pizza, pizzaAmount);
         }
     }
-    _running = false;
+    {
+        std::unique_lock lock(_mutex);
+
+        _running = false;
+    }
     messageInterpretor.join();
 }
 
