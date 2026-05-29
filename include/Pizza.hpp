@@ -2,6 +2,7 @@
 
 #include "Stock.hpp"
 #include <optional>
+#include <ostream>
 #include <regex>
 #include <string>
 #include <sstream>
@@ -47,6 +48,8 @@ namespace plazza {
             static std::optional<Pizza> unpack(std::smatch);
 
             void consume(Stock &);
+            std::string getTypeString(void) const;
+            std::string getSizeString(void) const;
 
         private:
             Type _type;
@@ -69,3 +72,5 @@ namespace plazza {
             }
     };
 }
+
+std::ostream &operator<<(std::ostream &s, const plazza::Pizza&);

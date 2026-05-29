@@ -147,3 +147,43 @@ void plazza::Pizza::consume(Stock &stock)
             break;
     }
 }
+
+std::string plazza::Pizza::getTypeString(void) const
+{
+    switch (_type) {
+        case Type::Regina:
+            return "Regina";
+        case Type::Margarita:
+            return "Margarita";
+        case Type::Fantasia:
+            return "Fantasia";
+        case Type::Americana:
+            return "Americana";
+    }
+    return "";
+}
+
+std::string plazza::Pizza::getSizeString(void) const
+{
+    switch (_size) {
+        case Size::S:
+            return "S";
+        case Size::M:
+            return "M";
+        case Size::L:
+            return "L";
+        case Size::XL:
+            return "XL";
+        case Size::XXL:
+            return "XLL";
+    }
+    return "";
+}
+
+std::ostream &operator<<(std::ostream &s, const plazza::Pizza& pizza)
+{
+    std::string type;
+    std::string size;
+    s << pizza.getSizeString() << " " << pizza.getTypeString();
+    return s;
+}

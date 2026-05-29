@@ -207,6 +207,10 @@ void plazza::Reception::interpretMessage(std::string msg)
             {
                 elem.pizzaAmount -= 1;
             });
+            std::optional<Pizza> pizza = Pizza::unpack(line_vec[2] + " " + line_vec[3]);
+            if (!pizza.has_value())
+                break;
+            std::cout << pizza.value() <<  " just finished cooking in kitchen " << kitchenId << "." << std::endl;
             break;
         }
         case StatusCode::STATUS: {
