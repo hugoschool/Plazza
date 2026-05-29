@@ -2,7 +2,7 @@
 
 #include "Args.hpp"
 #include "IPCM.hpp"
-#include "Pizza.hpp"
+#include "PizzAbstract.hpp"
 #include "SafeQueue.hpp"
 #include <regex>
 
@@ -36,7 +36,7 @@ namespace plazza {
 
             void createKitchen();
             void interpretMessage(std::string);
-            void distributePizzas(Pizza, int &pizzanum);
+            void distributePizzas(std::unique_ptr<PizzInterface> pizza, int &pizzanum);
             void messageInterpretorFunc();
             void askStatus();
             void printStatus(std::vector<std::string>);

@@ -15,7 +15,7 @@ namespace plazza {
             {
                 std::lock_guard lock(_mutex);
 
-                _queue.push(value);
+                _queue.push(std::move(value));
                 _cv.notify_one();
             }
 

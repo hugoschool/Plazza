@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Stock.hpp"
+#include "PizzInterface.hpp"
 #include <optional>
 #include <ostream>
 #include <regex>
@@ -8,7 +9,7 @@
 #include <sstream>
 
 namespace plazza {
-    class Pizza {
+    class PizzAbstract : public PizzInterface {
         public:
             enum class Type
             {
@@ -27,15 +28,15 @@ namespace plazza {
                 XXL = 16
             };
 
-            Pizza() = delete;
-            Pizza(Type type, Size size);
-            ~Pizza() = default;
+            PizzAbstract() = delete;
+            PizzAbstract(Type type, Size size);
+            ~PizzAbstract() = default;
 
-            bool getCooked() const;
-            void setCooked(bool state);
+            bool getCooked() const override;
+            void setCooked(bool state) override;
 
             // Time is given in milliseconds. The multiplier must be added on top.
-            double getBakingTime() const;
+            double getBakingTime() const override;
 
             static std::optional<Type> getType(std::string);
             static std::string getType(Type);
@@ -43,13 +44,13 @@ namespace plazza {
             static std::optional<Size> getSize(std::string);
             static std::string getSize(Size);
 
-            std::string pack() const;
-            static std::optional<Pizza> unpack(std::string);
-            static std::optional<Pizza> unpack(std::smatch);
+            std::string pack() const override;
+            static std::unique_ptr<PizzInterface> unpack(std::string);
+            static std::unique_ptr<PizzInterface> unpack(std::smatch);
 
-            void consume(Stock &);
-            std::string getTypeString(void) const;
-            std::string getSizeString(void) const;
+            void consume(Stock &) override;
+            std::string getTypeString(void) const override;
+            std::string getSizeString(void) const override;
 
         private:
             Type _type;
@@ -73,4 +74,4 @@ namespace plazza {
     };
 }
 
-std::ostream &operator<<(std::ostream &s, const plazza::Pizza&);
+std::ostream &operator<<(std::ostream &s, const std::unique_ptr<plazza::PizzInterface> pizza);
