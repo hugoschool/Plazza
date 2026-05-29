@@ -209,7 +209,7 @@ void plazza::Reception::interpretMessage(std::string msg)
                 elem.pizzaAmount -= 1;
             });
             std::shared_ptr<PizzInterface> pizza = PizzAbstract::unpack(line_vec[2] + " " + line_vec[3]);
-            if (pizza != nullptr)
+            if (pizza == nullptr)
                 break;
             std::cout << pizza <<  " just finished cooking in kitchen " << kitchenId << "." << std::endl;
             std::cout << "> " << std::flush;
