@@ -175,7 +175,7 @@ std::string plazza::Pizza::getSizeString(void) const
         case Size::XL:
             return "XL";
         case Size::XXL:
-            return "XLL";
+            return "XXL";
     }
     return "";
 }
