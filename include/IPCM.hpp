@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Pizza.hpp"
-#include <map>
 #include <optional>
 #include <string>
 #include <mqueue.h>
+#include "SafeMap.hpp"
 
 namespace plazza {
     enum class StatusCode {
@@ -16,8 +16,8 @@ namespace plazza {
 
     class IPCM {
         private:
-            std::map<int, mqd_t> _receptionistQueues;
-            std::map<int, mqd_t> _kitchenQueues;
+            plazza::SafeMap<int, mqd_t> _receptionistQueues;
+            plazza::SafeMap<int, mqd_t> _kitchenQueues;
 
             static constexpr std::size_t BUFFER_SIZE = 256;
 
@@ -33,8 +33,5 @@ namespace plazza {
             void closeKitchen(int index, int &openedKitchen);
             void sendPizzaToKitchen(Pizza &pizza, int index);
             void createAndSendMessage(int index, StatusCode code);
-
-            std::map<int, mqd_t> getReceptionistQueues() const;
-            std::map<int, mqd_t> getKitchenQueues() const;
     };
 }
