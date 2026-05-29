@@ -211,6 +211,7 @@ void plazza::Reception::interpretMessage(std::string msg)
             if (!pizza.has_value())
                 break;
             std::cout << pizza.value() <<  " just finished cooking in kitchen " << kitchenId << "." << std::endl;
+            std::cout << "> " << std::flush;
             break;
         }
         case StatusCode::STATUS: {
