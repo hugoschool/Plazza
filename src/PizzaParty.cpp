@@ -65,7 +65,7 @@ void plazza::PizzaParty::execute()
 
         DEBUG << "New task has been given, cook is going to execute it" << std::endl;
 
-        std::unique_ptr<PizzInterface> pizza = _pizzaQueue.pop();
+        std::shared_ptr<PizzInterface> pizza = _pizzaQueue.pop();
         {
             std::lock_guard lock(_mutex);
 
@@ -80,16 +80,16 @@ void plazza::PizzaParty::execute()
             DEBUG << "Pizzas currently cooking: " << _currentlyCookingAmount << std::endl;
         }
 
-        _ipc.createAndSendMessage(_kitchenID, StatusCode::DONE, std::move(pizza));
+        _ipc.createAndSendMessage(_kitchenID, StatusCode::DONE, pizza);
         _lastBaked = std::chrono::steady_clock::now();
     }
     DEBUG << "Left cook thread" << std::endl;
 }
 
-void plazza::PizzaParty::add(std::unique_ptr<PizzInterface> pizza)
+void plazza::PizzaParty::add(std::shared_ptr<PizzInterface> pizza)
 {
     DEBUG << "Adding a new pizza to the queue" << std::endl;
-    _pizzaQueue.push(std::move(pizza));
+    _pizzaQueue.push(pizza);
     _cv.notify_one();
 }
 

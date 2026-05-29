@@ -36,7 +36,7 @@ namespace plazza {
 
             void createKitchen();
             void interpretMessage(std::string);
-            void distributePizzas(std::unique_ptr<PizzInterface> pizza, int &pizzanum);
+            void distributePizzas(std::shared_ptr<PizzInterface> pizza, int &pizzanum);
             void messageInterpretorFunc();
             void askStatus();
             void printStatus(std::vector<std::string>);

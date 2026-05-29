@@ -61,7 +61,7 @@ void plazza::IPCM::openKitchen(int index)
     DEBUG << "Receptionist queue size: " << _receptionistQueues.size() << std::endl;
 }
 
-void plazza::IPCM::sendPizzaToKitchen(std::unique_ptr<plazza::PizzInterface> pizza, int index)
+void plazza::IPCM::sendPizzaToKitchen(std::shared_ptr<plazza::PizzInterface> pizza, int index)
 {
     receptionistToKitchen(index, pizza->pack());
 }
@@ -82,7 +82,7 @@ void plazza::IPCM::closeKitchen(int index, int &openedKitchen)
     DEBUG << "Successfully closed kitchen, there are now " << openedKitchen << " kitchens still opened" << std::endl;
 }
 
-void plazza::IPCM::createAndSendMessage(int index, plazza::StatusCode code, std::unique_ptr<PizzInterface> pizza)
+void plazza::IPCM::createAndSendMessage(int index, plazza::StatusCode code, std::shared_ptr<PizzInterface> pizza)
 {
     std::string msg = std::to_string(static_cast<int>(code));
 

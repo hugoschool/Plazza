@@ -31,8 +31,8 @@ namespace plazza {
             std::optional<std::string> readReceptionistMessage(int index);
             void openKitchen(int index);
             void closeKitchen(int index, int &openedKitchen);
-            void sendPizzaToKitchen(std::unique_ptr<PizzInterface>, int index);
-            void createAndSendMessage(int index, StatusCode code, std::unique_ptr<PizzInterface>);
+            void sendPizzaToKitchen(std::shared_ptr<PizzInterface>, int index);
+            void createAndSendMessage(int index, StatusCode code, std::shared_ptr<PizzInterface>);
             mqd_t createMessageQueue(std::string name);
     };
 }

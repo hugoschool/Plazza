@@ -45,8 +45,8 @@ namespace plazza {
             static std::string getSize(Size);
 
             std::string pack() const override;
-            static std::unique_ptr<PizzInterface> unpack(std::string);
-            static std::unique_ptr<PizzInterface> unpack(std::smatch);
+            static std::shared_ptr<PizzInterface> unpack(std::string);
+            static std::shared_ptr<PizzInterface> unpack(std::smatch);
 
             void consume(Stock &) override;
             std::string getTypeString(void) const override;
@@ -74,4 +74,4 @@ namespace plazza {
     };
 }
 
-std::ostream &operator<<(std::ostream &s, const std::unique_ptr<plazza::PizzInterface> pizza);
+std::ostream &operator<<(std::ostream &s, const std::shared_ptr<plazza::PizzInterface> pizza);

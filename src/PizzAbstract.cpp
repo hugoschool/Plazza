@@ -89,7 +89,7 @@ std::string plazza::PizzAbstract::pack() const
     return getType(_type) + " " + getSize(_size);
 }
 
-std::unique_ptr<plazza::PizzInterface> plazza::PizzAbstract::unpack(std::string str)
+std::shared_ptr<plazza::PizzInterface> plazza::PizzAbstract::unpack(std::string str)
 {
     std::vector<std::string> tokens = Utils::String::split(str, " ");
 
@@ -101,10 +101,10 @@ std::unique_ptr<plazza::PizzInterface> plazza::PizzAbstract::unpack(std::string 
     if (!type.has_value() || !size.has_value())
         return nullptr;
 
-    return std::make_unique<PizzAbstract>(type.value(), size.value());
+    return std::make_shared<PizzAbstract>(type.value(), size.value());
 }
 
-std::unique_ptr<plazza::PizzInterface> plazza::PizzAbstract::unpack(std::smatch matches)
+std::shared_ptr<plazza::PizzInterface> plazza::PizzAbstract::unpack(std::smatch matches)
 {
     if (matches.size() < 3)
         return nullptr;
@@ -114,7 +114,7 @@ std::unique_ptr<plazza::PizzInterface> plazza::PizzAbstract::unpack(std::smatch 
     if (!type.has_value() || !size.has_value())
         return nullptr;
 
-    return std::make_unique<PizzAbstract>(type.value(), size.value());
+    return std::make_shared<PizzAbstract>(type.value(), size.value());
 }
 
 void plazza::PizzAbstract::consume(Stock &stock)
@@ -180,7 +180,7 @@ std::string plazza::PizzAbstract::getSizeString(void) const
     return "";
 }
 
-std::ostream &operator<<(std::ostream &s, const std::unique_ptr<plazza::PizzInterface> pizza)
+std::ostream &operator<<(std::ostream &s, const std::shared_ptr<plazza::PizzInterface> pizza)
 {
     std::string type;
     std::string size;

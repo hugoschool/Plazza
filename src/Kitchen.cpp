@@ -52,10 +52,10 @@ void plazza::Kitchen::run()
         std::optional<std::string> message = _ipc.readReceptionistMessage(_kitchenID);
 
         if (message.has_value()) {
-            std::unique_ptr<PizzInterface> pizza = PizzAbstract::unpack(message.value());
+            std::shared_ptr<PizzInterface> pizza = PizzAbstract::unpack(message.value());
 
             if (pizza != nullptr) {
-                _party.add(std::move(pizza));
+                _party.add(pizza);
                 _ipc.createAndSendMessage(_kitchenID, StatusCode::OK, nullptr);
             } else if (message.value() == "status") {
                 sendStatus();

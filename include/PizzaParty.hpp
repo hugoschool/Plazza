@@ -16,7 +16,7 @@ namespace plazza {
             ~PizzaParty();
 
             void execute();
-            void add(std::unique_ptr<PizzInterface> pizza);
+            void add(std::shared_ptr<PizzInterface> pizza);
 
             std::chrono::steady_clock::time_point getLastBaked() const;
             std::size_t getQueueSize();
@@ -32,7 +32,7 @@ namespace plazza {
             bool _running;
             int _currentlyCookingAmount;
             std::vector<std::thread> _threads;
-            SafeQueue<std::unique_ptr<PizzInterface>> _pizzaQueue;
+            SafeQueue<std::shared_ptr<PizzInterface>> _pizzaQueue;
             std::condition_variable _cv;
             std::mutex _mutex;
 

@@ -120,7 +120,7 @@ void plazza::Reception::run()
                 continue;
             }
 
-            std::unique_ptr<PizzInterface> pizza = PizzAbstract::unpack(matches);
+            std::shared_ptr<PizzInterface> pizza = PizzAbstract::unpack(matches);
             if (pizza == nullptr) {
                 std::cerr << "Invalid pizza: " << token << std::endl;
                 continue;
@@ -135,7 +135,7 @@ void plazza::Reception::run()
             DEBUG << "Current pizza: " << token << std::endl;
 
             // Load Balancing
-            distributePizzas(std::move(pizza), pizzaAmount);
+            distributePizzas(pizza, pizzaAmount);
         }
     }
     {
@@ -147,7 +147,7 @@ void plazza::Reception::run()
         messageInterpretor.join();
 }
 
-void plazza::Reception::distributePizzas(std::unique_ptr<PizzInterface> pizza, int &pizzanum)
+void plazza::Reception::distributePizzas(std::shared_ptr<PizzInterface> pizza, int &pizzanum)
 {
     if (_kitchenMap.size() == 0)
         createKitchen();
@@ -163,7 +163,7 @@ void plazza::Reception::distributePizzas(std::unique_ptr<PizzInterface> pizza, i
             createKitchen();
             minID = _nextKitchenID - 1;
         }
-        _ipc.sendPizzaToKitchen(std::move(pizza), minID);
+        _ipc.sendPizzaToKitchen(pizza, minID);
         _kitchenMap.applyAt<void(plazza::Reception::KitchenContent &)>(minID, [](plazza::Reception::KitchenContent &elem)
         {
             elem.pizzaAmount += 1;
@@ -208,10 +208,10 @@ void plazza::Reception::interpretMessage(std::string msg)
             {
                 elem.pizzaAmount -= 1;
             });
-            std::unique_ptr<PizzInterface> pizza = PizzAbstract::unpack(line_vec[2] + " " + line_vec[3]);
+            std::shared_ptr<PizzInterface> pizza = PizzAbstract::unpack(line_vec[2] + " " + line_vec[3]);
             if (pizza != nullptr)
                 break;
-            std::cout << std::move(pizza) <<  " just finished cooking in kitchen " << kitchenId << "." << std::endl;
+            std::cout << pizza <<  " just finished cooking in kitchen " << kitchenId << "." << std::endl;
             std::cout << "> " << std::flush;
             break;
         }
