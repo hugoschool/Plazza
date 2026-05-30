@@ -6,6 +6,9 @@ int main(int argc, char **argv)
 {
     try {
         plazza::Args args(argc, argv);
+        if (args.isHelp())
+            return 0;
+
         plazza::Reception reception(args);
 
         reception.run();
