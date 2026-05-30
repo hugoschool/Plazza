@@ -10,8 +10,8 @@
 #include <iostream>
 #include <mutex>
 #include <regex>
-#include <stdexcept>
 #include <string>
+#include <thread>
 #include <unistd.h>
 #include <sys/wait.h>
 
@@ -33,7 +33,7 @@ void plazza::Reception::messageInterpretorFunc()
 {
     while (true) {
         {
-            std::unique_lock lock(_mutex);
+            std::lock_guard lock(_mutex);
 
             if (_running == false)
                 break;
@@ -86,7 +86,7 @@ void plazza::Reception::run()
 
     while (true) {
         {
-            std::unique_lock lock(_mutex);
+            std::lock_guard lock(_mutex);
 
             if (_running == false)
                 break;
@@ -138,7 +138,7 @@ void plazza::Reception::run()
         }
     }
     {
-        std::unique_lock lock(_mutex);
+        std::lock_guard lock(_mutex);
 
         _running = false;
     }

@@ -13,7 +13,7 @@ namespace plazza {
 
             void push(T value)
             {
-                std::unique_lock lock(_mutex);
+                std::lock_guard lock(_mutex);
 
                 _queue.push(value);
                 _cv.notify_one();
@@ -21,7 +21,7 @@ namespace plazza {
 
             bool tryPop(T &value)
             {
-                std::unique_lock lock(_mutex);
+                std::lock_guard lock(_mutex);
 
                 if (_queue.empty())
                     return false;
@@ -44,21 +44,21 @@ namespace plazza {
 
             std::size_t size()
             {
-                std::unique_lock lock(_mutex);
+                std::lock_guard lock(_mutex);
 
                 return _queue.size();
             }
 
             bool empty()
             {
-                std::unique_lock lock(_mutex);
+                std::lock_guard lock(_mutex);
 
                 return _queue.empty();
             }
 
             T &front()
             {
-                std::unique_lock lock(_mutex);
+                std::lock_guard lock(_mutex);
 
                 return _queue.front();
             }

@@ -17,45 +17,45 @@ namespace plazza {
             ~SafeMap() = default;
 
             void insert(T key, U value) {
-                std::unique_lock lock(_mutex);
+                std::lock_guard lock(_mutex);
 
                 _map.insert({key, value});
             };
 
             void erase(T key) {
-                std::unique_lock lock(_mutex);
+                std::lock_guard lock(_mutex);
 
                 _map.erase(key);
             };
 
             U& at(T key) {
-                std::unique_lock lock(_mutex);
+                std::lock_guard lock(_mutex);
 
                 return _map.at(key);
             };
 
             template<typename F>
             void applyAt(T key, std::function<F> fct) {
-                std::unique_lock lock(_mutex);
+                std::lock_guard lock(_mutex);
 
                 U &elem = _map.at(key);
                 fct(elem);
             };
 
             size_t size() {
-                std::unique_lock lock(_mutex);
+                std::lock_guard lock(_mutex);
 
                 return _map.size();
             };
 
             bool empty() {
-                std::unique_lock lock(_mutex);
+                std::lock_guard lock(_mutex);
 
                 return _map.empty();
             };
 
             std::_Rb_tree_iterator<std::pair<const T, U>> begin() {
-                std::unique_lock lock(_mutex);
+                std::lock_guard lock(_mutex);
 
                 return _map.begin();
             };
