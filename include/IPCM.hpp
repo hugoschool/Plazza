@@ -33,5 +33,6 @@ namespace plazza {
             void closeKitchen(int index, int &openedKitchen);
             void sendPizzaToKitchen(Pizza &pizza, int index);
             void createAndSendMessage(int index, StatusCode code, std::optional<Pizza>);
+            mqd_t createMessageQueue(std::string name);
     };
 }
