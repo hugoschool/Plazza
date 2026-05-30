@@ -29,14 +29,17 @@ namespace plazza {
             };
 
             PizzAbstract() = delete;
-            PizzAbstract(Type type, Size size);
+            PizzAbstract(Size size);
             ~PizzAbstract() = default;
 
             bool getCooked() const override;
             void setCooked(bool state) override;
 
             // Time is given in milliseconds. The multiplier must be added on top.
-            double getBakingTime() const override;
+            virtual double getBakingTime() const override = 0;
+            virtual std::string getTypeString(void) const override = 0;
+            virtual void consume(Stock &) override = 0;
+            virtual std::string pack() const override = 0;
 
             static std::optional<Type> getType(std::string);
             static std::string getType(Type);
@@ -44,18 +47,12 @@ namespace plazza {
             static std::optional<Size> getSize(std::string);
             static std::string getSize(Size);
 
-            std::string pack() const override;
             static std::shared_ptr<PizzInterface> unpack(std::string);
             static std::shared_ptr<PizzInterface> unpack(std::smatch);
 
-            void consume(Stock &) override;
-            std::string getTypeString(void) const override;
             std::string getSizeString(void) const override;
 
         private:
-            Type _type;
-            Size _size;
-
             bool _cooked;
 
             template<typename T>
@@ -71,6 +68,9 @@ namespace plazza {
 
                 return static_cast<T>(nb);
             }
+
+        protected:
+            Size _size;
     };
 }
 

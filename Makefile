@@ -17,6 +17,8 @@ SRC :=  src/main.cpp \
 		src/Kitchen.cpp \
 		src/IPCM.cpp \
 		src/PizzAbstract.cpp \
+		src/PizzaClass.cpp	\
+		src/Builder.cpp \
 		src/Stock.cpp \
 		src/PizzaParty.cpp \
 		src/Cook.cpp
