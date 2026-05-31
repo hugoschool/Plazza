@@ -2,6 +2,7 @@
 #include "Debug.hpp"
 #include "Exception.hpp"
 #include "Pizza.hpp"
+#include <cerrno>
 #include <cstring>
 #include <fcntl.h>
 #include <format>
@@ -18,6 +19,28 @@ plazza::IPCM::IPCM()
 plazza::IPCM::~IPCM()
 {}
 
+mqd_t plazza::IPCM::createMessageQueue(std::string name)
+{
+    struct mq_attr attr;
+    attr.mq_msgsize = BUFFER_SIZE;
+    attr.mq_curmsgs = 0;
+    attr.mq_flags = O_NONBLOCK;
+    attr.mq_maxmsg = 10;
+
+    mqd_t queue = mq_open(name.c_str(), O_CREAT | O_RDWR | O_NONBLOCK | O_EXCL, 0644, &attr);
+
+    // O_EXCL makes the command fail if the mq already exists, in that case delete the message queue and try again.
+    if (queue == static_cast<mqd_t>(-1) && errno == EEXIST) {
+        mq_unlink(name.c_str());
+        queue = mq_open(name.c_str(), O_CREAT | O_RDWR | O_NONBLOCK | O_EXCL, 0644, &attr);
+    }
+
+    if (queue == static_cast<mqd_t>(-1)) {
+        throw Exception("Failed to create receptionist queue");
+    }
+    return queue;
+}
+
 void plazza::IPCM::openKitchen(int index)
 {
     struct mq_attr attr;
@@ -27,13 +50,10 @@ void plazza::IPCM::openKitchen(int index)
     attr.mq_maxmsg = 10;
 
     std::string kitchenName = "/Kitchen " + std::to_string(index);
-    mqd_t kitchenQueue = mq_open(kitchenName.c_str(), O_CREAT | O_RDWR | O_NONBLOCK, 0644, &attr);
-    if (kitchenQueue == static_cast<mqd_t>(-1))
-        throw Exception("Failed to create kitchen queue");
+    mqd_t kitchenQueue = createMessageQueue(kitchenName);
+
     std::string receptionistName = "/Receptionist " + std::to_string(index);
-    mqd_t receptionistQueue = mq_open(receptionistName.c_str(), O_CREAT | O_RDWR | O_NONBLOCK, 0644, &attr);
-    if (receptionistQueue == static_cast<mqd_t>(-1))
-        throw Exception("Failed to create receptionist queue");
+    mqd_t receptionistQueue = createMessageQueue(receptionistName);
 
     _kitchenQueues.insert(index, kitchenQueue);
     _receptionistQueues.insert(index, receptionistQueue);

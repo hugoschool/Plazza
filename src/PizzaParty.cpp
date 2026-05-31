@@ -32,7 +32,7 @@ plazza::PizzaParty::PizzaParty(double multiplier, int cooksAmount, Stock &stock,
 plazza::PizzaParty::~PizzaParty()
 {
     {
-        std::unique_lock lock(_mutex);
+        std::lock_guard lock(_mutex);
         _running = true;
     }
 
@@ -68,14 +68,14 @@ void plazza::PizzaParty::execute()
 
         Pizza pizza = _pizzaQueue.pop();
         {
-            std::unique_lock lock(_mutex);
+            std::lock_guard lock(_mutex);
 
             _currentlyCookingAmount++;
             DEBUG << "Pizzas currently cooking: " << _currentlyCookingAmount << std::endl;
         }
         cook.execute(pizza, _multiplier);
         {
-            std::unique_lock lock(_mutex);
+            std::lock_guard lock(_mutex);
 
             _currentlyCookingAmount--;
             DEBUG << "Pizzas currently cooking: " << _currentlyCookingAmount << std::endl;
@@ -106,7 +106,7 @@ std::size_t plazza::PizzaParty::getQueueSize()
 
 int plazza::PizzaParty::getCurrentlyCookingAmount()
 {
-    std::unique_lock lock(_mutex);
+    std::lock_guard lock(_mutex);
 
     return _currentlyCookingAmount;
 }

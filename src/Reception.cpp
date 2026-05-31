@@ -6,12 +6,13 @@
 #include "Kitchen.hpp"
 #include "Pizza.hpp"
 #include "Utils.hpp"
+#include <chrono>
 #include <cstdlib>
 #include <iostream>
 #include <mutex>
 #include <regex>
-#include <stdexcept>
 #include <string>
+#include <thread>
 #include <unistd.h>
 #include <sys/wait.h>
 
@@ -33,7 +34,7 @@ void plazza::Reception::messageInterpretorFunc()
 {
     while (true) {
         {
-            std::unique_lock lock(_mutex);
+            std::lock_guard lock(_mutex);
 
             if (_running == false)
                 break;
@@ -51,6 +52,8 @@ void plazza::Reception::messageInterpretorFunc()
             std::string message = _messageQueue.pop();
             interpretMessage(message);
         }
+        // Wait for 250ms as to not saturate the message queues
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
 }
 
@@ -86,7 +89,7 @@ void plazza::Reception::run()
 
     while (true) {
         {
-            std::unique_lock lock(_mutex);
+            std::lock_guard lock(_mutex);
 
             if (_running == false)
                 break;
@@ -138,11 +141,12 @@ void plazza::Reception::run()
         }
     }
     {
-        std::unique_lock lock(_mutex);
+        std::lock_guard lock(_mutex);
 
         _running = false;
     }
-    messageInterpretor.join();
+    if (messageInterpretor.joinable())
+        messageInterpretor.join();
 }
 
 void plazza::Reception::distributePizzas(plazza::Pizza pizza, int &pizzanum)

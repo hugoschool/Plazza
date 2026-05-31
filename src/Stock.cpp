@@ -21,7 +21,7 @@ plazza::Stock::Stock() :
 
 void plazza::Stock::restock()
 {
-    std::unique_lock lock(_mutex);
+    std::lock_guard lock(_mutex);
 
     for (auto &[ingredient, element] : _ingredients) {
         restockElement(ingredient, element);
@@ -35,7 +35,7 @@ std::unordered_map<std::string, unsigned int> plazza::Stock::getIngredients() co
 
 void plazza::Stock::consume(std::string ingredient)
 {
-    std::unique_lock lock(_mutex);
+    std::lock_guard lock(_mutex);
 
     try {
         unsigned int &element = _ingredients.at(ingredient);
