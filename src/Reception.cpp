@@ -145,7 +145,8 @@ void plazza::Reception::run()
 
         _running = false;
     }
-    messageInterpretor.join();
+    if (messageInterpretor.joinable())
+        messageInterpretor.join();
 }
 
 void plazza::Reception::distributePizzas(plazza::Pizza pizza, int &pizzanum)
