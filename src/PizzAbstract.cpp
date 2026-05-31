@@ -5,8 +5,8 @@
 #include <optional>
 #include <iostream>
 
-plazza::PizzAbstract::PizzAbstract(Size size)
-    : _cooked(false), _size(size)
+plazza::PizzAbstract::PizzAbstract(pizza::Size size, pizza::Type type)
+    : _cooked(false), _type(type), _size(size)
 {
 }
 
@@ -21,49 +21,54 @@ void plazza::PizzAbstract::setCooked(bool state)
     _cooked = state;
 }
 
-std::optional<plazza::PizzAbstract::Type> plazza::PizzAbstract::getType(std::string str)
+std::optional<plazza::pizza::Type> plazza::PizzAbstract::getType(std::string str)
 {
-    std::optional optNb = retrieveNb<plazza::PizzAbstract::Type>(str);
+    std::optional optNb = retrieveNb<plazza::pizza::Type>(str);
 
     if (optNb.has_value())
         return optNb.value();
 
     str = Utils::String::tolower(str);
     if (str == "regina")
-        return plazza::PizzAbstract::Type::Regina;
+        return plazza::pizza::Type::Regina;
     if (str == "margarita")
-        return plazza::PizzAbstract::Type::Margarita;
+        return plazza::pizza::Type::Margarita;
     if (str == "americana")
-        return plazza::PizzAbstract::Type::Americana;
+        return plazza::pizza::Type::Americana;
     if (str == "fantasia")
-        return plazza::PizzAbstract::Type::Fantasia;
+        return plazza::pizza::Type::Fantasia;
     return std::nullopt;
 }
 
-std::optional<plazza::PizzAbstract::Size> plazza::PizzAbstract::getSize(std::string str)
+std::optional<plazza::pizza::Size> plazza::PizzAbstract::getSize(std::string str)
 {
-    std::optional optNb = retrieveNb<plazza::PizzAbstract::Size>(str);
+    std::optional optNb = retrieveNb<plazza::pizza::Size>(str);
 
     if (optNb.has_value())
         return optNb.value();
 
     str = Utils::String::tolower(str);
     if (str == "s")
-        return Size::S;
+        return pizza::Size::S;
     if (str == "m")
-        return Size::M;
+        return pizza::Size::M;
     if (str == "l")
-        return Size::L;
+        return pizza::Size::L;
     if (str == "xl")
-        return Size::XL;
+        return pizza::Size::XL;
     if (str == "xxl")
-        return Size::XXL;
+        return pizza::Size::XXL;
     return std::nullopt;
 }
 
-std::string plazza::PizzAbstract::getSize(plazza::PizzAbstract::Size size)
+std::string plazza::PizzAbstract::getSize(plazza::pizza::Size size)
 {
     return std::to_string(static_cast<int>(size));
+}
+
+std::string plazza::PizzAbstract::pack() const
+{
+    return std::to_string(static_cast<int>(_type)) + " " + getSize(_size);
 }
 
 std::shared_ptr<plazza::PizzInterface> plazza::PizzAbstract::unpack(std::string str)
@@ -97,15 +102,15 @@ std::shared_ptr<plazza::PizzInterface> plazza::PizzAbstract::unpack(std::smatch 
 std::string plazza::PizzAbstract::getSizeString(void) const
 {
     switch (_size) {
-        case Size::S:
+        case pizza::Size::S:
             return "S";
-        case Size::M:
+        case pizza::Size::M:
             return "M";
-        case Size::L:
+        case pizza::Size::L:
             return "L";
-        case Size::XL:
+        case pizza::Size::XL:
             return "XL";
-        case Size::XXL:
+        case pizza::Size::XXL:
             return "XXL";
     }
     return "";

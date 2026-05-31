@@ -1,5 +1,6 @@
 #pragma once
 
+#include "PizzaEnums.hpp"
 #include "Stock.hpp"
 #include "PizzInterface.hpp"
 #include <optional>
@@ -11,25 +12,8 @@
 namespace plazza {
     class PizzAbstract : public PizzInterface {
         public:
-            enum class Type
-            {
-                Regina = 1,
-                Margarita = 2,
-                Americana = 4,
-                Fantasia = 8
-            };
-
-            enum class Size
-            {
-                S = 1,
-                M = 2,
-                L = 4,
-                XL = 8,
-                XXL = 16
-            };
-
             PizzAbstract() = delete;
-            PizzAbstract(Size size);
+            PizzAbstract(pizza::Size size, pizza::Type type);
             ~PizzAbstract() = default;
 
             bool getCooked() const override;
@@ -39,14 +23,14 @@ namespace plazza {
             virtual double getBakingTime() const override = 0;
             virtual std::string getTypeString(void) const override = 0;
             virtual void consume(Stock &) override = 0;
-            virtual std::string pack() const override = 0;
 
-            static std::optional<Type> getType(std::string);
-            static std::string getType(Type);
+            static std::optional<pizza::Type> getType(std::string);
+            static std::string getType(pizza::Type);
 
-            static std::optional<Size> getSize(std::string);
-            static std::string getSize(Size);
+            static std::optional<pizza::Size> getSize(std::string);
+            static std::string getSize(pizza::Size);
 
+            std::string pack() const override;
             static std::shared_ptr<PizzInterface> unpack(std::string);
             static std::shared_ptr<PizzInterface> unpack(std::smatch);
 
@@ -54,6 +38,7 @@ namespace plazza {
 
         private:
             bool _cooked;
+            pizza::Type _type;
 
             template<typename T>
             static std::optional<T> retrieveNb(std::string str)
@@ -70,7 +55,7 @@ namespace plazza {
             }
 
         protected:
-            Size _size;
+            pizza::Size _size;
     };
 }
 
