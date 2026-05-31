@@ -2,7 +2,6 @@
 #include "Cook.hpp"
 #include "Debug.hpp"
 #include "IPCM.hpp"
-#include "Pizza.hpp"
 #include <mutex>
 #include <thread>
 #include <iostream>
@@ -66,14 +65,14 @@ void plazza::PizzaParty::execute()
 
         DEBUG << "New task has been given, cook is going to execute it" << std::endl;
 
-        Pizza pizza = _pizzaQueue.pop();
+        std::shared_ptr<PizzInterface> pizza = _pizzaQueue.pop();
         {
             std::lock_guard lock(_mutex);
 
             _currentlyCookingAmount++;
             DEBUG << "Pizzas currently cooking: " << _currentlyCookingAmount << std::endl;
         }
-        cook.execute(pizza, _multiplier);
+        cook.execute(*pizza, _multiplier);
         {
             std::lock_guard lock(_mutex);
 
@@ -87,7 +86,7 @@ void plazza::PizzaParty::execute()
     DEBUG << "Left cook thread" << std::endl;
 }
 
-void plazza::PizzaParty::add(Pizza pizza)
+void plazza::PizzaParty::add(std::shared_ptr<PizzInterface> pizza)
 {
     DEBUG << "Adding a new pizza to the queue" << std::endl;
     _pizzaQueue.push(pizza);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Pizza.hpp"
+#include "PizzAbstract.hpp"
 #include <optional>
 #include <string>
 #include <mqueue.h>
@@ -31,8 +31,8 @@ namespace plazza {
             std::optional<std::string> readReceptionistMessage(int index);
             void openKitchen(int index);
             void closeKitchen(int index, int &openedKitchen);
-            void sendPizzaToKitchen(Pizza &pizza, int index);
-            void createAndSendMessage(int index, StatusCode code, std::optional<Pizza>);
+            void sendPizzaToKitchen(std::shared_ptr<PizzInterface>, int index);
+            void createAndSendMessage(int index, StatusCode code, std::shared_ptr<PizzInterface>);
             mqd_t createMessageQueue(std::string name);
     };
 }

@@ -4,7 +4,6 @@
 #include "Debug.hpp"
 #include "IPCM.hpp"
 #include "Kitchen.hpp"
-#include "Pizza.hpp"
 #include "Utils.hpp"
 #include <chrono>
 #include <cstdlib>
@@ -121,12 +120,11 @@ void plazza::Reception::run()
                 continue;
             }
 
-            std::optional pizzaOpt = Pizza::unpack(matches);
-            if (!pizzaOpt.has_value()) {
+            std::shared_ptr<PizzInterface> pizza = PizzAbstract::unpack(matches);
+            if (pizza == nullptr) {
                 std::cerr << "Invalid pizza: " << token << std::endl;
                 continue;
             }
-            Pizza pizza = pizzaOpt.value();
 
             int pizzaAmount = std::stoi(matches[3].str().substr(1));
             if (pizzaAmount <= 0) {
@@ -149,15 +147,14 @@ void plazza::Reception::run()
         messageInterpretor.join();
 }
 
-void plazza::Reception::distributePizzas(plazza::Pizza pizza, int &pizzanum)
+void plazza::Reception::distributePizzas(std::shared_ptr<PizzInterface> pizza, int &pizzanum)
 {
-    int minID;
-
     if (_kitchenMap.size() == 0)
         createKitchen();
     while (pizzanum != 0) {
-        minID = _kitchenMap.begin()->first;
+        int minID = _kitchenMap.begin()->first;
         std::vector<std::size_t> ids = _kitchenMap.keys();
+
         for (std::size_t id: ids) {
             if (_kitchenMap.at(id).pizzaAmount < _kitchenMap.at(minID).pizzaAmount)
                 minID = id;
@@ -211,10 +208,10 @@ void plazza::Reception::interpretMessage(std::string msg)
             {
                 elem.pizzaAmount -= 1;
             });
-            std::optional<Pizza> pizza = Pizza::unpack(line_vec[2] + " " + line_vec[3]);
-            if (!pizza.has_value())
+            std::shared_ptr<PizzInterface> pizza = PizzAbstract::unpack(line_vec[2] + " " + line_vec[3]);
+            if (pizza == nullptr)
                 break;
-            std::cout << pizza.value() <<  " just finished cooking in kitchen " << kitchenId << "." << std::endl;
+            std::cout << pizza <<  " just finished cooking in kitchen " << kitchenId << "." << std::endl;
             std::cout << "> " << std::flush;
             break;
         }

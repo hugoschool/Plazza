@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Pizza.hpp"
+#include "PizzAbstract.hpp"
 #include "Stock.hpp"
 
 namespace plazza {
@@ -9,7 +9,7 @@ namespace plazza {
             Cook(Stock &stock);
             ~Cook() = default;
 
-            void execute(Pizza &, double);
+            void execute(PizzInterface &, double);
         private:
             Stock &_stock;
     };

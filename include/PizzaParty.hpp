@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IPCM.hpp"
-#include "Pizza.hpp"
+#include "PizzAbstract.hpp"
 #include "SafeQueue.hpp"
 #include <condition_variable>
 #include <cstddef>
@@ -16,7 +16,7 @@ namespace plazza {
             ~PizzaParty();
 
             void execute();
-            void add(Pizza);
+            void add(std::shared_ptr<PizzInterface> pizza);
 
             std::chrono::steady_clock::time_point getLastBaked() const;
             std::size_t getQueueSize();
@@ -32,7 +32,7 @@ namespace plazza {
             bool _running;
             int _currentlyCookingAmount;
             std::vector<std::thread> _threads;
-            SafeQueue<Pizza> _pizzaQueue;
+            SafeQueue<std::shared_ptr<PizzInterface>> _pizzaQueue;
             std::condition_variable _cv;
             std::mutex _mutex;
 

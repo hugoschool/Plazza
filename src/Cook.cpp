@@ -1,6 +1,5 @@
 #include "Cook.hpp"
 #include "Debug.hpp"
-#include "Pizza.hpp"
 #include <chrono>
 #include <thread>
 #include <iostream>
@@ -9,7 +8,7 @@ plazza::Cook::Cook(Stock &stock) : _stock(stock)
 {
 }
 
-void plazza::Cook::execute(plazza::Pizza &pizza, double multiplier)
+void plazza::Cook::execute(plazza::PizzInterface &pizza, double multiplier)
 {
     const std::chrono::milliseconds duration(static_cast<long>(pizza.getBakingTime() * multiplier));
 
